@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational Apps Directory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .subject-icons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0 10px 0;
+            font-size: 2em;
+        }
+
+        .copyright {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .filters {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-item {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-item label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select:hover {
+            border-color: #667eea;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .reset-btn {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: flex-end;
+        }
+
+        .reset-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .apps-container {
+            padding: 30px;
+        }
+
+        .stats {
+            text-align: center;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+            color: #495057;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .app-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .app-card.hidden {
+            display: none;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .app-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 8px;
+        }
+
+        .app-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge.subject {
+            color: white;
+            font-weight: 600;
+        }
+
+        .badge.subject.maths {
+            background: #2196F3;
+        }
+
+        .badge.subject.physics {
+            background: #f44336;
+        }
+
+        .badge.subject.computer {
+            background: #4CAF50;
+        }
+
+        .badge.level {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .app-description {
+            color: #6c757d;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .app-link {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .app-link:hover {
+            background: #5568d3;
+            transform: translateX(5px);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .no-results h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+
+        footer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        footer .subject-icons {
+            margin-bottom: 15px;
+        }
+
+        footer .copyright {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .filter-group {
+                flex-direction: column;
+            }
+            
+            .filter-item {
+                width: 100%;
+            }
+
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Educational Apps Directory</h1>
+            <p>Interactive tools for Maths, Physics, and Computer Science</p>
+            <div class="subject-icons">
+                <span title="Mathematics">∑ π ∫</span>
+                <span title="Physics">⚛ ⚡ 🔬</span>
+                <span title="Computer Science">💻 {} &lt;/&gt;</span>
+            </div>
+            <div class="copyright">© LeeMcCullochJames</div>
+        </header>
+
+        <div class="filters">
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label for="subject-filter">Subject:</label>
+                    <select id="subject-filter">
+                        <option value="all">All Subjects</option>
+                        <option value="Maths">Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Computer">Computer Science</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="level-filter">Level:</label>
+                    <select id="level-filter">
+                        <option value="all">All Levels</option>
+                        <option value="M">Middle School</option>
+                        <option value="H">High School</option>
+                        <option value="U">Undergraduate</option>
+                    </select>
+                </div>
+                <button class="reset-btn" onclick="resetFilters()">Reset Filters</button>
+            </div>
+        </div>
+
+        <div class="apps-container">
+            <div class="stats" id="stats">Loading apps...</div>
+            <div class="app-grid" id="app-grid"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="subject-icons">
+            <span title="Mathematics">∑ π ∫</span>
+            <span title="Physics">⚛ ⚡ 🔬</span>
+            <span title="Computer Science">💻 {} &lt;/&gt;</span>
+        </div>
+        <div class="copyright">© LeeMcCullochJames</div>
+    </footer>
+
+    <script>
+        // ============================================
+        // DATA SOURCE CONFIGURATION
+        // ============================================
+        // Option 1: Google Sheets (uncomment to use)
+        // const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1OsRlN-hDqrVuPReCq_yKZfF-RZB9Umg5macHqvLz478/export?format=csv';
+        
+        // Option 2: Use embedded data below
+        const USE_EMBEDDED_DATA = true;
+
+        // ============================================
+        // MANUAL APP ADDITIONS
+        // ============================================
+        // Add new apps here in this format:
+        const MANUAL_APPS = [
+            // Example format (uncomment and modify to add):
+            // {
+            //     "Subject": "Maths",
+            //     "Level": "H",
+            //     "App Name": "Your New App Name",
+            //     "App URL": "https://your-app-url.com",
+            //     "Description": "Description of what your app does"
+            // },
+        ];
+
+        // ============================================
+        // EMBEDDED DATA (from Excel - Vercel URLs)
+        // ============================================
+        const EMBEDDED_APPS = [
+            {"Subject": "Maths", "Level": "U", "App Name": "cyclotomic-ulam", "App URL": "https://cyclotomic-ulam.vercel.app", "Description": "Mathematical visualization involving Ulam spirals and cyclotomic polynomials."},
+            {"Subject": "Maths", "Level": "U", "App Name": "reptend-surprise", "App URL": "https://reptend-surprise.vercel.app", "Description": "A project exploring mathematical \"reptends\" (repeating decimals)."},
+            {"Subject": "Maths", "Level": "M", "App Name": "discriminat-quadratic", "App URL": "https://discriminat-quadratic.vercel.app", "Description": "A tool for calculating or visualizing the discriminant of quadratic equations."},
+            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-enrichment2025", "App URL": "https://computer-science-enrichment2025.vercel.app", "Description": "Educational resource for 2025 Computer Science enrichment."},
+            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-advanced-2025", "App URL": "https://computer-science-advanced-2025.vercel.app", "Description": "Advanced level 2025 Computer Science educational content."},
+            {"Subject": "Computer", "Level": "H", "App Name": "arrays-searches", "App URL": "https://arrays-searches.vercel.app", "Description": "Demonstrations or problems related to array search algorithms."},
+            {"Subject": "Physics", "Level": "H", "App Name": "thermo-firstlaw", "App URL": "https://thermo-firstlaw.vercel.app", "Description": "Physics application focused on the First Law of Thermodynamics."},
+            {"Subject": "Computer", "Level": "H", "App Name": "control-systems", "App URL": "https://control-systems-seven.vercel.app", "Description": "Engineering tool or simulation for control systems."},
+            {"Subject": "Physics", "Level": "H", "App Name": "atmospheric-pressure-manometer", "App URL": "https://atmospheric-pressure-manometer.vercel.app", "Description": "Physics simulation of atmospheric pressure using a manometer."},
+            {"Subject": "Physics", "Level": "H", "App Name": "shm-manometer", "App URL": "https://shm-manometer.vercel.app", "Description": "Simple Harmonic Motion (SHM) simulation for a manometer."},
+            {"Subject": "Maths", "Level": "U", "App Name": "ulam-composites-markov", "App URL": "https://ulam-composites-markov.vercel.app", "Description": "Analysis of Ulam spirals, composite numbers, and Markov chains."},
+            {"Subject": "Computer", "Level": "H", "App Name": "binary-treeproblems", "App URL": "https://binary-treeproblems.vercel.app", "Description": "Coding challenges or visualizations for binary tree data structures."},
+            {"Subject": "Physics", "Level": "H", "App Name": "galilean-relativity", "App URL": "https://galilean-relativity.vercel.app", "Description": "Educational tool for Galilean Relativity physics concepts."},
+            {"Subject": "Physics", "Level": "H", "App Name": "maxwell-relativity", "App URL": "https://maxwell-relativity.vercel.app", "Description": "Physics exploration of Maxwell's equations and relativity."},
+            {"Subject": "Physics", "Level": "H", "App Name": "special-relativity-past-papers", "App URL": "https://special-relativity-past-papers.vercel.app", "Description": "Archive of past examination papers for Special Relativity."},
+            {"Subject": "Physics", "Level": "H", "App Name": "special-relativity-q-a-calculations", "App URL": "https://special-relativity-q-a-calculations.vercel.app", "Description": "Calculation tool for Special Relativity Q&A."},
+            {"Subject": "Physics", "Level": "H", "App Name": "special-relativity-starters", "App URL": "https://special-relativity-starters.vercel.app", "Description": "Introductory material or \"starter\" problems for Special Relativity."},
+            {"Subject": "Maths", "Level": "U", "App Name": "euler-totient", "App URL": "https://euler-totient.vercel.app", "Description": "Calculator for Euler's Totient function (φ(n))."},
+            {"Subject": "Maths", "Level": "U", "App Name": "base-dependentreptends", "App URL": "https://base-dependentreptends.vercel.app", "Description": "Study of repeating decimals across different number bases."},
+            {"Subject": "Maths", "Level": "U", "App Name": "reptend-capacity-function", "App URL": "https://reptend-capacity-function.vercel.app", "Description": "Mathematical exploration of reptend capacity functions."},
+            {"Subject": "Maths", "Level": "U", "App Name": "non-exact50-reptends", "App URL": "https://non-exact50-reptends.vercel.app", "Description": "Specific study of non-exact 50% (like Fermat)-digit repeating decimals."},
+            {"Subject": "Physics", "Level": "U", "App Name": "mediant-lorenz-tranformations", "App URL": "https://mediant-lorenz-tranformations.vercel.app", "Description": "Physics tool for Lorenz transformations using mediant properties."},
+            {"Subject": "Maths", "Level": "U", "App Name": "eisenstein-ulam-reg-reptend-reducible", "App URL": "https://eisenstein-ulam-reg-reptend-reducib.vercel.app", "Description": "Research into reducible Eisenstein Ulam spirals and reptends."},
+            {"Subject": "Maths", "Level": "U", "App Name": "eisenstein-ulam-desktop-app", "App URL": "https://eisenstein-ulam-desktop-app.vercel.app", "Description": "Desktop-optimized application for Eisenstein Ulam spiral analysis."},
+            {"Subject": "Maths", "Level": "U", "App Name": "primes-regular-reptend-rediucible", "App URL": "https://primes-regular-reptend-rediucible.vercel.app", "Description": "Mathematical study of reducible regular reptend primes."},
+            {"Subject": "Maths", "Level": "M", "App Name": "yr9-starters-poyla3", "App URL": "https://yr9-starters-poyla3.vercel.app", "Description": "Year 9 mathematics starters based on Polya's principles."},
+            {"Subject": "Maths", "Level": "M", "App Name": "maths-poyla-intuit1", "App URL": "https://maths-poyla-intuit1.vercel.app", "Description": "Mathematical intuition tool based on Polya's problem solving."},
+            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-interactive-2025", "App URL": "https://computer-science-interactive-2025.vercel.app", "Description": "Interactive learning platform for 2025 Computer Science."},
+            {"Subject": "Computer", "Level": "H", "App Name": "database-computer-science", "App URL": "https://database-computer-science.vercel.app", "Description": "Educational tool for Computer Science database management."},
+            {"Subject": "Physics", "Level": "H", "App Name": "shm-orthog-circular", "App URL": "https://shm-orthog-circular.vercel.app", "Description": "Visualization of orthogonal circular Simple Harmonic Motion."},
+            {"Subject": "Maths", "Level": "U", "App Name": "reptend-prime-cycle-categories", "App URL": "https://reptend-prime-cycle-categories.vercel.app", "Description": "Classification of prime cycles within repeating decimals."},
+            {"Subject": "Maths", "Level": "M", "App Name": "egyptian-fractions", "App URL": "https://egyptian-fractions.vercel.app", "Description": "Calculator for decomposing fractions into Egyptian fractions."},
+            {"Subject": "Physics", "Level": "H", "App Name": "nuclear-fission-MCQ", "App URL": "https://nuclear-fission-guide.vercel.app", "Description": "Guide and instructional material on nuclear fission."},
+            {"Subject": "Physics", "Level": "H", "App Name": "nuclear-decay-survival-time", "App URL": "https://nuclear-decay-survival-time.vercel.app", "Description": "Simulation/Calculator for radioactive decay survival times."},
+            {"Subject": "Maths", "Level": "H", "App Name": "market-crash", "App URL": "https://market-crash-self.vercel.app", "Description": "Simulation or analysis of stock market crash dynamics."},
+            {"Subject": "Maths", "Level": "M", "App Name": "simultaneous-equations-check", "App URL": "https://simultaneous-equations-check.vercel.app", "Description": "Utility for checking solutions to simultaneous equations."},
+            {"Subject": "Maths", "Level": "H", "App Name": "dla-aggregation", "App URL": "https://dla-aggregation.vercel.app", "Description": "Diffusion-Limited Aggregation fractal simulation."},
+            {"Subject": "Physics", "Level": "H", "App Name": "i-bphysics-dictionary", "App URL": "https://i-bphysics-dictionary.vercel.app", "Description": "A comprehensive glossary for the IB Physics syllabus."},
+            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-glossary2014", "App URL": "https://computer-science-glossary2014.vercel.app", "Description": "Archive of Computer Science terms from the 2014 syllabus."},
+            {"Subject": "Maths", "Level": "U", "App Name": "worpisky-lattice-jet", "App URL": "https://worpisky-lattice-jet.vercel.app", "Description": "Mathematical visualization of Worpitsky lattice structures."},
+            {"Subject": "Maths", "Level": "U", "App Name": "hyperbolic-farey-disc", "App URL": "https://hyperbolic-farey-disc.vercel.app", "Description": "Visualization of the Farey diagram on a hyperbolic disc."},
+            {"Subject": "Physics", "Level": "M", "App Name": "cargo-stacking-simulator", "App URL": "https://cargo-stacking-simulator.vercel.app", "Description": "Simulator for optimizing or visualizing cargo stacking."},
+            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-TrueFalse", "App URL": "https://computer-science-true-false.vercel.app/", "Description": "MCQ TRUE/FALSE split SL and HL"},
+            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-database", "App URL": "https://comp-science-databse-quiz.vercel.app/", "Description": "Database questions"},
+            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-collections", "App URL": "https://cs-list-collections.vercel.app/", "Description": "Collections - linkedList Array lists"},
+            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-collections", "App URL": "https://cs-list-collections.vercel.app/", "Description": "Collections - linkedList Array lists"}, 
+            {"Subject": "Physics", "Level": "H", "App Name": "resonanceAntennaBohrCMBR", "App URL": "https://resonance-bohr-antenna.vercel.app/", "Description": ""},
+            {"Subject": "Maths", "Level": "H", "App Name": "simultaneousAlgebra", "App URL": "https://algebra-simultaneous-mastery.vercel.app/", "Description": "linear algebra up LCM subtraction "},
+            {"Subject": "Maths", "Level": "H", "App Name": "simultaneousAlgebra", "App URL": "https://simultaneous-equations-rouge.vercel.app/", "Description": "stadardForm lines and intersections"},
+            {"Subject": "Maths", "Level": "H", "App Name": "QAsimultaneousAlgebra", "App URL": "https://qa-simultaneous-algebra.vercel.app/", "Description": "revealsSolutionbyGraphs"},
+            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-database", "App URL": "https://comp-science-databse-quiz.vercel.app/", "Description": "Database questions"},
+            {"Subject": "Physics", "Level": "H", "App Name": "resonanceAntennaBohrCMBR", "App URL": "https://resonance-bohr-antenna.vercel.app/", "Description": "Resonance and antenna physics exploration tool."}
+        ];
+
+        // ============================================
+        // APP DATA MANAGEMENT
+        // ============================================
+        let allApps = [];
+
+        // Level labels for display
+        const LEVEL_LABELS = {
+            'M': 'Middle School',
+            'H': 'High School',
+            'U': 'Undergraduate'
+        };
+
+        // Initialize the app
+        async function initializeApp() {
+            try {
+                if (USE_EMBEDDED_DATA) {
+                    allApps = [...EMBEDDED_APPS, ...MANUAL_APPS];
+                } else {
+                    // Load from Google Sheets CSV
+                    await loadFromGoogleSheets();
+                }
+                renderApps();
+            } catch (error) {
+                console.error('Error loading apps:', error);
+                document.getElementById('stats').innerHTML = '❌ Error loading apps. Please check console.';
+            }
+        }
+
+        // Load data from Google Sheets
+        async function loadFromGoogleSheets() {
+            const response = await fetch(GOOGLE_SHEET_URL);
+            const csvText = await response.text();
+            
+            // Parse CSV
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            
+            const apps = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                const app = {};
+                headers.forEach((header, index) => {
+                    app[header] = values[index] || '';
+                });
+                
+                // Only add if required fields exist
+                if (app['Subject'] && app['Level'] && app['App Name'] && app['App URL']) {
+                    apps.push(app);
+                }
+            }
+            
+            allApps = [...apps, ...MANUAL_APPS];
+        }
+
+        // Render all apps
+        function renderApps() {
+            const grid = document.getElementById('app-grid');
+            const subjectFilter = document.getElementById('subject-filter').value;
+            const levelFilter = document.getElementById('level-filter').value;
+
+            // Filter apps
+            const filteredApps = allApps.filter(app => {
+                const matchSubject = subjectFilter === 'all' || app.Subject === subjectFilter;
+                const matchLevel = levelFilter === 'all' || app.Level === levelFilter;
+                return matchSubject && matchLevel;
+            });
+
+            // Update stats
+            document.getElementById('stats').textContent = 
+                `Showing ${filteredApps.length} of ${allApps.length} apps`;
+
+            // Clear grid
+            grid.innerHTML = '';
+
+            // Render filtered apps
+            if (filteredApps.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results">
+                        <h3>No apps found</h3>
+                        <p>Try adjusting your filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredApps.forEach(app => {
+                const card = createAppCard(app);
+                grid.appendChild(card);
+            });
+        }
+
+        // Create app card element
+        function createAppCard(app) {
+            const card = document.createElement('div');
+            card.className = 'app-card';
+            
+            const levelLabel = LEVEL_LABELS[app.Level] || app.Level;
+            
+            // Determine subject class for color coding
+            let subjectClass = '';
+            if (app.Subject === 'Maths') subjectClass = 'maths';
+            else if (app.Subject === 'Physics') subjectClass = 'physics';
+            else if (app.Subject === 'Computer') subjectClass = 'computer';
+            
+            card.innerHTML = `
+                <div class="app-header">
+                    <div class="app-badges">
+                        <span class="badge subject ${subjectClass}">${app.Subject}</span>
+                        <span class="badge level">${levelLabel}</span>
+                    </div>
+                </div>
+                <div class="app-name">${app['App Name']}</div>
+                <div class="app-description">${app.Description || 'No description available'}</div>
+                <a href="${app['App URL']}" target="_blank" class="app-link">Open App →</a>
+            `;
+            
+            return card;
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('subject-filter').value = 'all';
+            document.getElementById('level-filter').value = 'all';
+            renderApps();
+        }
+
+        // Event listeners
+        document.getElementById('subject-filter').addEventListener('change', renderApps);
+        document.getElementById('level-filter').addEventListener('change', renderApps);
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>
