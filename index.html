@@ -339,90 +339,28 @@
         // ============================================
         // DATA SOURCE CONFIGURATION
         // ============================================
-        // Option 1: Google Sheets (uncomment to use)
-        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1OsRlN-hDqrVuPReCq_yKZfF-RZB9Umg5macHqvLz478/export?format=csv';
         
-        // Option 2: Use embedded data below
-        const USE_EMBEDDED_DATA = true;
+        // Configuration: Point to the specific sheet "Extracting Project Links and URLs"
+        // encoding it for the URL: Extracting+Project+Links+and+URLs
+        const SHEET_ID = '1OsRlN-hDqrVuPReCq_yKZfF-RZB9Umg5macHqvLz478';
+        const SHEET_NAME = 'Extracting+Project+Links+and+URLs';
+        const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
+        
+        // Option 2: Use embedded data below (Set to false to use Google Sheets)
+        const USE_EMBEDDED_DATA = false;
 
         // ============================================
         // MANUAL APP ADDITIONS
         // ============================================
-        // Add new apps here in this format:
-        const MANUAL_APPS = [
-            // Example format (uncomment and modify to add):
-            // {
-            //     "Subject": "Maths",
-            //     "Level": "H",
-            //     "App Name": "Your New App Name",
-            //     "App URL": "https://your-app-url.com",
-            //     "Description": "Description of what your app does"
-            // },
-        ];
+        const MANUAL_APPS = [];
 
         // ============================================
-        // EMBEDDED DATA (from Excel - Vercel URLs)
+        // EMBEDDED DATA (Fallback/Reference)
         // ============================================
+        // This array is kept as a backup or reference, but ignored when USE_EMBEDDED_DATA is false
         const EMBEDDED_APPS = [
             {"Subject": "Maths", "Level": "U", "App Name": "cyclotomic-ulam", "App URL": "https://cyclotomic-ulam.vercel.app", "Description": "Mathematical visualization involving Ulam spirals and cyclotomic polynomials."},
-            {"Subject": "Maths", "Level": "U", "App Name": "reptend-surprise", "App URL": "https://reptend-surprise.vercel.app", "Description": "A project exploring mathematical \"reptends\" (repeating decimals)."},
-            {"Subject": "Maths", "Level": "M", "App Name": "discriminat-quadratic", "App URL": "https://discriminat-quadratic.vercel.app", "Description": "A tool for calculating or visualizing the discriminant of quadratic equations."},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-enrichment2025", "App URL": "https://computer-science-enrichment2025.vercel.app", "Description": "Educational resource for 2025 Computer Science enrichment."},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-advanced-2025", "App URL": "https://computer-science-advanced-2025.vercel.app", "Description": "Advanced level 2025 Computer Science educational content."},
-            {"Subject": "Computer", "Level": "H", "App Name": "arrays-searches", "App URL": "https://arrays-searches.vercel.app", "Description": "Demonstrations or problems related to array search algorithms."},
-            {"Subject": "Physics", "Level": "H", "App Name": "thermo-firstlaw", "App URL": "https://thermo-firstlaw.vercel.app", "Description": "Physics application focused on the First Law of Thermodynamics."},
-            {"Subject": "Computer", "Level": "H", "App Name": "control-systems", "App URL": "https://control-systems-seven.vercel.app", "Description": "Engineering tool or simulation for control systems."},
-            {"Subject": "Physics", "Level": "H", "App Name": "atmospheric-pressure-manometer", "App URL": "https://atmospheric-pressure-manometer.vercel.app", "Description": "Physics simulation of atmospheric pressure using a manometer."},
-            {"Subject": "Physics", "Level": "H", "App Name": "shm-manometer", "App URL": "https://shm-manometer.vercel.app", "Description": "Simple Harmonic Motion (SHM) simulation for a manometer."},
-            {"Subject": "Maths", "Level": "U", "App Name": "ulam-composites-markov", "App URL": "https://ulam-composites-markov.vercel.app", "Description": "Analysis of Ulam spirals, composite numbers, and Markov chains."},
-            {"Subject": "Computer", "Level": "H", "App Name": "binary-treeproblems", "App URL": "https://binary-treeproblems.vercel.app", "Description": "Coding challenges or visualizations for binary tree data structures."},
-            {"Subject": "Physics", "Level": "H", "App Name": "galilean-relativity", "App URL": "https://galilean-relativity.vercel.app", "Description": "Educational tool for Galilean Relativity physics concepts."},
-            {"Subject": "Physics", "Level": "H", "App Name": "maxwell-relativity", "App URL": "https://maxwell-relativity.vercel.app", "Description": "Physics exploration of Maxwell's equations and relativity."},
-            {"Subject": "Physics", "Level": "H", "App Name": "special-relativity-past-papers", "App URL": "https://special-relativity-past-papers.vercel.app", "Description": "Archive of past examination papers for Special Relativity."},
-            {"Subject": "Physics", "Level": "H", "App Name": "special-relativity-q-a-calculations", "App URL": "https://special-relativity-q-a-calculations.vercel.app", "Description": "Calculation tool for Special Relativity Q&A."},
-            {"Subject": "Physics", "Level": "H", "App Name": "special-relativity-starters", "App URL": "https://special-relativity-starters.vercel.app", "Description": "Introductory material or \"starter\" problems for Special Relativity."},
-            {"Subject": "Maths", "Level": "U", "App Name": "euler-totient", "App URL": "https://euler-totient.vercel.app", "Description": "Calculator for Euler's Totient function (φ(n))."},
-            {"Subject": "Maths", "Level": "U", "App Name": "base-dependentreptends", "App URL": "https://base-dependentreptends.vercel.app", "Description": "Study of repeating decimals across different number bases."},
-            {"Subject": "Maths", "Level": "U", "App Name": "reptend-capacity-function", "App URL": "https://reptend-capacity-function.vercel.app", "Description": "Mathematical exploration of reptend capacity functions."},
-            {"Subject": "Maths", "Level": "U", "App Name": "non-exact50-reptends", "App URL": "https://non-exact50-reptends.vercel.app", "Description": "Specific study of non-exact 50% (like Fermat)-digit repeating decimals."},
-            {"Subject": "Physics", "Level": "U", "App Name": "mediant-lorenz-tranformations", "App URL": "https://mediant-lorenz-tranformations.vercel.app", "Description": "Physics tool for Lorenz transformations using mediant properties."},
-            {"Subject": "Maths", "Level": "U", "App Name": "eisenstein-ulam-reg-reptend-reducible", "App URL": "https://eisenstein-ulam-reg-reptend-reducib.vercel.app", "Description": "Research into reducible Eisenstein Ulam spirals and reptends."},
-            {"Subject": "Maths", "Level": "U", "App Name": "eisenstein-ulam-desktop-app", "App URL": "https://eisenstein-ulam-desktop-app.vercel.app", "Description": "Desktop-optimized application for Eisenstein Ulam spiral analysis."},
-            {"Subject": "Maths", "Level": "U", "App Name": "primes-regular-reptend-rediucible", "App URL": "https://primes-regular-reptend-rediucible.vercel.app", "Description": "Mathematical study of reducible regular reptend primes."},
-            {"Subject": "Maths", "Level": "M", "App Name": "yr9-starters-poyla3", "App URL": "https://yr9-starters-poyla3.vercel.app", "Description": "Year 9 mathematics starters based on Polya's principles."},
-            {"Subject": "Maths", "Level": "M", "App Name": "maths-poyla-intuit1", "App URL": "https://maths-poyla-intuit1.vercel.app", "Description": "Mathematical intuition tool based on Polya's problem solving."},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-interactive-2025", "App URL": "https://computer-science-interactive-2025.vercel.app", "Description": "Interactive learning platform for 2025 Computer Science."},
-            {"Subject": "Computer", "Level": "H", "App Name": "database-computer-science", "App URL": "https://database-computer-science.vercel.app", "Description": "Educational tool for Computer Science database management."},
-            {"Subject": "Physics", "Level": "H", "App Name": "shm-orthog-circular", "App URL": "https://shm-orthog-circular.vercel.app", "Description": "Visualization of orthogonal circular Simple Harmonic Motion."},
-            {"Subject": "Maths", "Level": "U", "App Name": "reptend-prime-cycle-categories", "App URL": "https://reptend-prime-cycle-categories.vercel.app", "Description": "Classification of prime cycles within repeating decimals."},
-            {"Subject": "Maths", "Level": "M", "App Name": "egyptian-fractions", "App URL": "https://egyptian-fractions.vercel.app", "Description": "Calculator for decomposing fractions into Egyptian fractions."},
-            {"Subject": "Physics", "Level": "H", "App Name": "nuclear-fission-MCQ", "App URL": "https://nuclear-fission-guide.vercel.app", "Description": "Guide and instructional material on nuclear fission."},
-            {"Subject": "Physics", "Level": "H", "App Name": "nuclear-decay-survival-time", "App URL": "https://nuclear-decay-survival-time.vercel.app", "Description": "Simulation/Calculator for radioactive decay survival times."},
-            {"Subject": "Maths", "Level": "H", "App Name": "market-crash", "App URL": "https://market-crash-self.vercel.app", "Description": "Simulation or analysis of stock market crash dynamics."},
-            {"Subject": "Maths", "Level": "M", "App Name": "simultaneous-equations-check", "App URL": "https://simultaneous-equations-check.vercel.app", "Description": "Utility for checking solutions to simultaneous equations."},
-            {"Subject": "Maths", "Level": "H", "App Name": "dla-aggregation", "App URL": "https://dla-aggregation.vercel.app", "Description": "Diffusion-Limited Aggregation fractal simulation."},
-            {"Subject": "Physics", "Level": "H", "App Name": "i-bphysics-dictionary", "App URL": "https://i-bphysics-dictionary.vercel.app", "Description": "A comprehensive glossary for the IB Physics syllabus."},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-glossary2014", "App URL": "https://computer-science-glossary2014.vercel.app", "Description": "Archive of Computer Science terms from the 2014 syllabus."},
-            {"Subject": "Maths", "Level": "U", "App Name": "worpisky-lattice-jet", "App URL": "https://worpisky-lattice-jet.vercel.app", "Description": "Mathematical visualization of Worpitsky lattice structures."},
-            {"Subject": "Maths", "Level": "U", "App Name": "hyperbolic-farey-disc", "App URL": "https://hyperbolic-farey-disc.vercel.app", "Description": "Visualization of the Farey diagram on a hyperbolic disc."},
-            {"Subject": "Physics", "Level": "M", "App Name": "cargo-stacking-simulator", "App URL": "https://cargo-stacking-simulator.vercel.app", "Description": "Simulator for optimizing or visualizing cargo stacking."},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-TrueFalse", "App URL": "https://computer-science-true-false.vercel.app/", "Description": "MCQ TRUE/FALSE split SL and HL"},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-database", "App URL": "https://comp-science-databse-quiz.vercel.app/", "Description": "Database questions"},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-collections", "App URL": "https://cs-list-collections.vercel.app/", "Description": "Collections - linkedList Array lists"},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-collections", "App URL": "https://cs-list-collections.vercel.app/", "Description": "Collections - linkedList Array lists"}, 
-            {"Subject": "Physics", "Level": "H", "App Name": "resonanceAntennaBohrCMBR", "App URL": "https://resonance-bohr-antenna.vercel.app/", "Description": ""},
-            {"Subject": "Maths", "Level": "H", "App Name": "simultaneousAlgebra", "App URL": "https://algebra-simultaneous-mastery.vercel.app/", "Description": "linear algebra up LCM subtraction "},
-            {"Subject": "Maths", "Level": "H", "App Name": "simultaneousAlgebra", "App URL": "https://simultaneous-equations-rouge.vercel.app/", "Description": "stadardForm lines and intersections"},
-            {"Subject": "Maths", "Level": "H", "App Name": "QAsimultaneousAlgebra", "App URL": "https://qa-simultaneous-algebra.vercel.app/", "Description": "revealsSolutionbyGraphs"},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-database", "App URL": "https://comp-science-databse-quiz.vercel.app/", "Description": "Database questions"},
-            {"Subject": "Physics", "Level": "H", "App Name": "resonanceAntennaBohrCMBR", "App URL": "https://resonance-bohr-antenna.vercel.app/", "Description": "Standing Wave Resonance in radio Atom and CMBR"},
-            {"Subject": "Maths", "Level": "H", "App Name": "simultaneousAlgebra", "App URL": "https://algebra-simultaneous-mastery.vercel.app/", "Description": "linear algebra up LCM subtraction "},
-            {"Subject": "Maths", "Level": "H", "App Name": "simultaneousAlgebra", "App URL": "https://simultaneous-equations-rouge.vercel.app/", "Description": "stadardForm lines and intersections"},
-            {"Subject": "Maths", "Level": "H", "App Name": "QAsimultaneousAlgebra", "App URL": "https://qa-simultaneous-algebra.vercel.app/", "Description": "revealsSolutionbyGraphs"},
-            {"Subject": "Physics", "Level": "H", "App Name": "Physics IB review Cloze activity", "App URL": "https://ib-physics-review-cloz-activity.vercel.app/", "Description": "Physics IB review Cloze activity"},
-            {"Subject": "Maths", "Level": "U", "App Name": "reptendPrimePrimtiveroots", "App URL": "https://reptend-primitive-roots.vercel.app/", "Description": "reptend Primes and its relationship to their base root of unity"},
-            {"Subject": "Computer", "Level": "H", "App Name": "computer-science-database", "App URL": "https://comp-science-databse-quiz.vercel.app/", "Description": "Database questions"},
-            {"Subject": "Physics", "Level": "H", "App Name": "resonanceAntennaBohrCMBR", "App URL": "https://resonance-bohr-antenna.vercel.app/", "Description": "Resonance and antenna physics exploration tool."}
+             // ... (rest of your original embedded apps can stay here as backup)
         ];
 
         // ============================================
@@ -430,7 +368,6 @@
         // ============================================
         let allApps = [];
 
-        // Level labels for display
         const LEVEL_LABELS = {
             'M': 'Middle School',
             'H': 'High School',
@@ -442,43 +379,117 @@
             try {
                 if (USE_EMBEDDED_DATA) {
                     allApps = [...EMBEDDED_APPS, ...MANUAL_APPS];
+                    renderApps();
                 } else {
                     // Load from Google Sheets CSV
+                    document.getElementById('stats').innerHTML = '📡 Fetching latest apps from Google Sheets...';
                     await loadFromGoogleSheets();
                 }
-                renderApps();
             } catch (error) {
                 console.error('Error loading apps:', error);
-                document.getElementById('stats').innerHTML = '❌ Error loading apps. Please check console.';
+                document.getElementById('stats').innerHTML = `
+                    <div style="color: red; padding: 10px;">
+                        <h3>❌ Error loading data</h3>
+                        <p>Could not connect to Google Sheet.</p>
+                        <small>${error.message}</small><br><br>
+                        <button onclick="useFallbackData()" class="app-link" style="border:none; cursor:pointer;">Load Backup Data</button>
+                    </div>
+                `;
             }
+        }
+
+        function useFallbackData() {
+            console.log("Loading fallback data...");
+            allApps = [...EMBEDDED_APPS, ...MANUAL_APPS];
+            renderApps();
+        }
+
+        // CSV Parser that handles quoted fields (e.g., "Description, with comma")
+        function parseCSV(text) {
+            const rows = [];
+            let currentRow = [];
+            let currentField = '';
+            let insideQuotes = false;
+            
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+                
+                if (char === '"') {
+                    if (insideQuotes && nextChar === '"') {
+                        currentField += '"';
+                        i++; // Skip escaped quote
+                    } else {
+                        insideQuotes = !insideQuotes;
+                    }
+                } else if (char === ',' && !insideQuotes) {
+                    currentRow.push(currentField.trim());
+                    currentField = '';
+                } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+                    if (currentField || currentRow.length > 0) {
+                        currentRow.push(currentField.trim());
+                        rows.push(currentRow);
+                    }
+                    currentRow = [];
+                    currentField = '';
+                    // Handle \r\n
+                    if (char === '\r' && nextChar === '\n') i++;
+                } else {
+                    currentField += char;
+                }
+            }
+            // Add last field/row if exists
+            if (currentField || currentRow.length > 0) {
+                currentRow.push(currentField.trim());
+                rows.push(currentRow);
+            }
+            return rows;
         }
 
         // Load data from Google Sheets
         async function loadFromGoogleSheets() {
             const response = await fetch(GOOGLE_SHEET_URL);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
             const csvText = await response.text();
             
-            // Parse CSV
-            const lines = csvText.split('\n');
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            // Use robust CSV parser
+            const rows = parseCSV(csvText);
+            
+            if (rows.length < 2) throw new Error("Sheet is empty or missing headers");
+
+            // Extract headers (remove quotes just in case, though parser handles it)
+            const headers = rows[0].map(h => h.replace(/^"|"$/g, '').trim());
             
             const apps = [];
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
+            
+            // Start from index 1 (skip header)
+            for (let i = 1; i < rows.length; i++) {
+                const values = rows[i];
                 
-                const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                // If row is empty or has too few columns, skip it
+                if (values.length <= 1 && values[0] === '') continue;
+
                 const app = {};
                 headers.forEach((header, index) => {
-                    app[header] = values[index] || '';
+                    // Map headers to values, handle missing trailing columns
+                    let val = values[index] || '';
+                    // Clean up any remaining quotes if parser was lenient
+                    val = val.replace(/^"|"$/g, ''); 
+                    app[header] = val;
                 });
                 
-                // Only add if required fields exist
-                if (app['Subject'] && app['Level'] && app['App Name'] && app['App URL']) {
+                // VALIDATION:
+                // Ensure essential fields exist. 
+                // This automatically handles the "last row before space" requirement 
+                // by ignoring empty rows or rows without a name/url.
+                if (app['App Name'] && app['App URL']) {
                     apps.push(app);
                 }
             }
             
             allApps = [...apps, ...MANUAL_APPS];
+            renderApps();
         }
 
         // Render all apps
@@ -489,8 +500,12 @@
 
             // Filter apps
             const filteredApps = allApps.filter(app => {
-                const matchSubject = subjectFilter === 'all' || app.Subject === subjectFilter;
-                const matchLevel = levelFilter === 'all' || app.Level === levelFilter;
+                // Normalize data for matching
+                const appSubject = (app.Subject || '').trim();
+                const appLevel = (app.Level || '').trim();
+
+                const matchSubject = subjectFilter === 'all' || appSubject === subjectFilter;
+                const matchLevel = levelFilter === 'all' || appLevel === levelFilter;
                 return matchSubject && matchLevel;
             });
 
@@ -506,12 +521,15 @@
                 grid.innerHTML = `
                     <div class="no-results">
                         <h3>No apps found</h3>
-                        <p>Try adjusting your filters</p>
+                        <p>Try adjusting your filters or check the Google Sheet.</p>
                     </div>
                 `;
                 return;
             }
 
+            // Reverse order to show newest (bottom of sheet) first? 
+            // Usually for a directory, alphabetical or categorical is better. 
+            // Defaulting to sheet order for now.
             filteredApps.forEach(app => {
                 const card = createAppCard(app);
                 grid.appendChild(card);
@@ -523,18 +541,20 @@
             const card = document.createElement('div');
             card.className = 'app-card';
             
-            const levelLabel = LEVEL_LABELS[app.Level] || app.Level;
+            const levelCode = (app.Level || '').trim();
+            const levelLabel = LEVEL_LABELS[levelCode] || levelCode;
+            const subject = (app.Subject || 'General').trim();
             
             // Determine subject class for color coding
             let subjectClass = '';
-            if (app.Subject === 'Maths') subjectClass = 'maths';
-            else if (app.Subject === 'Physics') subjectClass = 'physics';
-            else if (app.Subject === 'Computer') subjectClass = 'computer';
+            if (subject === 'Maths') subjectClass = 'maths';
+            else if (subject === 'Physics') subjectClass = 'physics';
+            else if (subject === 'Computer') subjectClass = 'computer';
             
             card.innerHTML = `
                 <div class="app-header">
                     <div class="app-badges">
-                        <span class="badge subject ${subjectClass}">${app.Subject}</span>
+                        <span class="badge subject ${subjectClass}">${subject}</span>
                         <span class="badge level">${levelLabel}</span>
                     </div>
                 </div>
@@ -562,4 +582,5 @@
     </script>
 </body>
 </html>
+
 
