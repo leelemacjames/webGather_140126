@@ -67,14 +67,14 @@
 
         .filter-group {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
             align-items: center;
         }
 
         .filter-item {
             flex: 1;
-            min-width: 200px;
+            min-width: 180px;
         }
 
         .filter-item label {
@@ -89,29 +89,22 @@
             padding: 12px;
             border: 2px solid #dee2e6;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             background: white;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        select:hover {
-            border-color: #667eea;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
+        select:hover { border-color: #667eea; }
+        select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
 
         .reset-btn {
-            padding: 12px 30px;
+            padding: 12px 25px;
             background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.3s;
             align-self: flex-end;
@@ -123,13 +116,11 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .apps-container {
-            padding: 30px;
-        }
+        .apps-container { padding: 30px; }
 
         .stats {
             text-align: center;
-            padding: 15px;
+            padding: 12px;
             background: #e7f3ff;
             border-radius: 8px;
             margin-bottom: 25px;
@@ -139,7 +130,7 @@
 
         .app-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
         }
 
@@ -149,17 +140,14 @@
             border-radius: 10px;
             padding: 20px;
             transition: all 0.3s;
-            cursor: pointer;
+            display: flex;
+            flex-direction: column;
         }
 
         .app-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             border-color: #667eea;
-        }
-
-        .app-card.hidden {
-            display: none;
         }
 
         .app-header {
@@ -170,93 +158,77 @@
         }
 
         .app-name {
-            font-size: 1.3em;
-            font-weight: 600;
+            font-size: 1.25em;
+            font-weight: 700;
             color: #212529;
-            margin-bottom: 8px;
-            word-wrap: break-word;
+            margin-bottom: 10px;
+            line-height: 1.3;
         }
 
         .app-badges {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
+            margin-bottom: 12px;
         }
 
         .badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-            white-space: nowrap;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .badge.subject {
-            color: white;
-            font-weight: 600;
-        }
+        .badge.subject { color: white; }
+        .badge.subject.maths { background: #2196F3; }
+        .badge.subject.physics { background: #f44336; }
+        .badge.subject.computer { background: #4CAF50; }
+        .badge.subject.general { background: #9c27b0; }
 
-        .badge.subject.maths {
-            background: #2196F3;
-        }
-
-        .badge.subject.physics {
-            background: #f44336;
-        }
-
-        .badge.subject.computer {
-            background: #4CAF50;
-        }
-
-        .badge.level {
-            background: #fff3cd;
-            color: #856404;
-        }
+        .badge.level { background: #fff3cd; color: #856404; }
+        .badge.type { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
 
         .app-description {
             color: #6c757d;
             line-height: 1.5;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            flex-grow: 1;
         }
 
         .app-link {
             display: inline-block;
-            padding: 8px 20px;
+            text-align: center;
+            padding: 10px 20px;
             background: #667eea;
             color: white;
             text-decoration: none;
             border-radius: 6px;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.3s;
         }
 
-        .app-link:hover {
-            background: #5568d3;
-            transform: translateX(5px);
-        }
+        .app-link:hover { background: #5568d3; }
 
         .no-results {
             text-align: center;
+            grid-column: 1 / -1;
             padding: 60px 20px;
             color: #6c757d;
         }
 
-        .no-results h3 {
-            font-size: 1.8em;
-            margin-bottom: 10px;
-        }
-
         footer {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
+            background: rgba(0,0,0,0.05);
+            padding: 20px;
             text-align: center;
+            border-top: 1px solid #e9ecef;
         }
 
         @media (max-width: 768px) {
             .filter-group { flex-direction: column; }
             .filter-item { width: 100%; }
-            .app-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -293,19 +265,26 @@
                         <option value="U">Undergraduate</option>
                     </select>
                 </div>
-                <button class="reset-btn" onclick="resetFilters()">Reset Filters</button>
+                <div class="filter-item">
+                    <label for="type-filter">Category Type:</label>
+                    <select id="type-filter">
+                        <option value="all">All Categories</option>
+                        <!-- Options populated dynamically from sheet Column F -->
+                    </select>
+                </div>
+                <button class="reset-btn" onclick="resetFilters()">Reset</button>
             </div>
         </div>
 
         <div class="apps-container">
-            <div class="stats" id="stats">Loading apps...</div>
+            <div class="stats" id="stats">Connecting to database...</div>
             <div class="app-grid" id="app-grid"></div>
         </div>
-    </div>
 
-    <footer>
-        <div class="copyright">© LeeMcCullochJames</div>
-    </footer>
+        <footer>
+            <div class="copyright">© LeeMcCullochJames</div>
+        </footer>
+    </div>
 
     <script>
         const SHEET_ID = '1OsRlN-hDqrVuPReCq_yKZfF-RZB9Umg5macHqvLz478';
@@ -317,11 +296,10 @@
 
         async function initializeApp() {
             try {
-                document.getElementById('stats').innerHTML = '📡 Fetching apps...';
                 await loadFromGoogleSheets();
             } catch (error) {
                 console.error(error);
-                document.getElementById('stats').innerHTML = `<div style="color:red">Error loading data.</div>`;
+                document.getElementById('stats').innerHTML = `<div style="color:red">Error loading data. Please check the Google Sheet sharing settings.</div>`;
             }
         }
 
@@ -351,19 +329,12 @@
             return rows;
         }
 
-        // IMPROVED URL CLEANER: Handles missing protocols and garbage characters
         function cleanUrl(url) {
             if (!url) return '';
             let cleaned = url.trim();
-            // Remove quotes and leading/trailing punctuation commonly found in CSV/Copy-Paste
             cleaned = cleaned.replace(/^['",]+|['",]+$/g, '');
-            // Remove invisible characters
             cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');
-            
             if (cleaned === '') return '';
-
-            // If it doesn't start with a protocol, assume it's a vercel/web link and prepend https://
-            // This prevents the 404 NOT_FOUND relative path error
             if (!/^https?:\/\//i.test(cleaned)) {
                 cleaned = 'https://' + cleaned;
             }
@@ -379,34 +350,58 @@
             const headers = rows[0].map(h => h.replace(/^"|"$/g, '').trim());
             
             const apps = [];
+            const typesSet = new Set();
+
             for (let i = 1; i < rows.length; i++) {
                 const values = rows[i];
                 if (values.length <= 1 && values[0] === '') continue;
+                
                 const app = {};
                 headers.forEach((header, idx) => {
-                    let val = (values[idx] || '').replace(/^"|"$/g, '');
+                    let val = (values[idx] || '').replace(/^"|"$/g, '').trim();
                     if (header === 'App URL') val = cleanUrl(val);
                     app[header] = val;
                 });
-                if (app['App Name'] && app['App URL']) apps.push(app);
+
+                if (app['App Name'] && app['App URL']) {
+                    apps.push(app);
+                    if (app['Type']) typesSet.add(app['Type']);
+                }
             }
+
             allApps = apps;
+            populateTypeFilter(Array.from(typesSet).sort());
             renderApps();
+        }
+
+        function populateTypeFilter(types) {
+            const select = document.getElementById('type-filter');
+            // Keep the "All" option
+            select.innerHTML = '<option value="all">All Categories</option>';
+            types.forEach(type => {
+                if (!type) return;
+                const opt = document.createElement('option');
+                opt.value = type;
+                opt.textContent = type;
+                select.appendChild(opt);
+            });
         }
 
         function renderApps() {
             const grid = document.getElementById('app-grid');
             const subF = document.getElementById('subject-filter').value;
             const levF = document.getElementById('level-filter').value;
+            const typF = document.getElementById('type-filter').value;
 
             const filtered = allApps.filter(app => {
                 const mS = subF === 'all' || (app.Subject || '').trim() === subF;
                 const mL = levF === 'all' || (app.Level || '').trim() === levF;
-                return mS && mL;
+                const mT = typF === 'all' || (app.Type || '').trim() === typF;
+                return mS && mL && mT;
             });
 
             document.getElementById('stats').textContent = `Showing ${filtered.length} of ${allApps.length} apps`;
-            grid.innerHTML = filtered.length ? '' : '<div class="no-results"><h3>No apps found</h3></div>';
+            grid.innerHTML = filtered.length ? '' : '<div class="no-results"><h3>No matches found for these filters</h3><p>Try resetting filters to see more results.</p></div>';
 
             filtered.forEach(app => {
                 const card = document.createElement('div');
@@ -414,17 +409,19 @@
                 const subject = (app.Subject || 'General').trim();
                 const subjectClass = subject.toLowerCase();
                 const levelLabel = LEVEL_LABELS[app.Level] || app.Level || 'General';
+                const type = app.Type || 'Resource';
                 
                 card.innerHTML = `
                     <div class="app-header">
                         <div class="app-badges">
                             <span class="badge subject ${subjectClass}">${subject}</span>
                             <span class="badge level">${levelLabel}</span>
+                            <span class="badge type">${type}</span>
                         </div>
                     </div>
                     <div class="app-name">${app['App Name']}</div>
                     <div class="app-description">${app.Description || 'Interactive educational tool.'}</div>
-                    <a href="${app['App URL']}" target="_blank" class="app-link">Open App →</a>
+                    <a href="${app['App URL']}" target="_blank" class="app-link">Launch Project →</a>
                 `;
                 grid.appendChild(card);
             });
@@ -433,15 +430,18 @@
         function resetFilters() {
             document.getElementById('subject-filter').value = 'all';
             document.getElementById('level-filter').value = 'all';
+            document.getElementById('type-filter').value = 'all';
             renderApps();
         }
 
         document.getElementById('subject-filter').addEventListener('change', renderApps);
         document.getElementById('level-filter').addEventListener('change', renderApps);
+        document.getElementById('type-filter').addEventListener('change', renderApps);
         window.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
+
 
 
 
