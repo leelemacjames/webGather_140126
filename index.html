@@ -246,13 +246,6 @@
             margin-bottom: 10px;
         }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 1.2em;
-            color: #667eea;
-        }
-
         footer {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -260,27 +253,10 @@
             text-align: center;
         }
 
-        footer .subject-icons {
-            margin-bottom: 15px;
-        }
-
-        footer .copyright {
-            font-size: 1em;
-            opacity: 0.9;
-        }
-
         @media (max-width: 768px) {
-            .filter-group {
-                flex-direction: column;
-            }
-            
-            .filter-item {
-                width: 100%;
-            }
-
-            .app-grid {
-                grid-template-columns: 1fr;
-            }
+            .filter-group { flex-direction: column; }
+            .filter-item { width: 100%; }
+            .app-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -328,85 +304,37 @@
     </div>
 
     <footer>
-        <div class="subject-icons">
-            <span title="Mathematics">∑ π ∫</span>
-            <span title="Physics">⚛ ⚡ 🔬</span>
-            <span title="Computer Science">💻 {} &lt;/&gt;</span>
-        </div>
         <div class="copyright">© LeeMcCullochJames</div>
     </footer>
 
     <script>
-        // ============================================
-        // DATA SOURCE CONFIGURATION
-        // ============================================
-        
-        // Configuration: Point to the specific sheet "Extracting Project Links and URLs"
-        // encoding it for the URL: Extracting+Project+Links+and+URLs
         const SHEET_ID = '1OsRlN-hDqrVuPReCq_yKZfF-RZB9Umg5macHqvLz478';
         const SHEET_NAME = 'Extracting+Project+Links+and+URLs';
         const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
         
-        // Option 2: Use embedded data below (Set to false to use Google Sheets)
-        const USE_EMBEDDED_DATA = false;
-
-        // ============================================
-        // MANUAL APP ADDITIONS
-        // ============================================
-        const MANUAL_APPS = [];
-
-        // ============================================
-        // APP DATA MANAGEMENT
-        // ============================================
+        const LEVEL_LABELS = { 'M': 'Middle School', 'H': 'High School', 'U': 'Undergraduate' };
         let allApps = [];
 
-        const LEVEL_LABELS = {
-            'M': 'Middle School',
-            'H': 'High School',
-            'U': 'Undergraduate'
-        };
-
-        // Initialize the app
         async function initializeApp() {
             try {
-                if (USE_EMBEDDED_DATA) {
-                    allApps = [...MANUAL_APPS]; // Embedded array removed to keep file clean, uses sheet.
-                    renderApps();
-                } else {
-                    // Load from Google Sheets CSV
-                    document.getElementById('stats').innerHTML = '📡 Fetching latest apps from Google Sheets...';
-                    await loadFromGoogleSheets();
-                }
+                document.getElementById('stats').innerHTML = '📡 Fetching apps...';
+                await loadFromGoogleSheets();
             } catch (error) {
-                console.error('Error loading apps:', error);
-                document.getElementById('stats').innerHTML = `
-                    <div style="color: red; padding: 10px;">
-                        <h3>❌ Error loading data</h3>
-                        <p>Could not connect to Google Sheet.</p>
-                        <small>${error.message}</small>
-                    </div>
-                `;
+                console.error(error);
+                document.getElementById('stats').innerHTML = `<div style="color:red">Error loading data.</div>`;
             }
         }
 
-        // CSV Parser that handles quoted fields (e.g., "Description, with comma")
         function parseCSV(text) {
             const rows = [];
             let currentRow = [];
             let currentField = '';
             let insideQuotes = false;
-            
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
-                const nextChar = text[i + 1];
-                
                 if (char === '"') {
-                    if (insideQuotes && nextChar === '"') {
-                        currentField += '"';
-                        i++; // Skip escaped quote
-                    } else {
-                        insideQuotes = !insideQuotes;
-                    }
+                    if (insideQuotes && text[i+1] === '"') { currentField += '"'; i++; }
+                    else { insideQuotes = !insideQuotes; }
                 } else if (char === ',' && !insideQuotes) {
                     currentRow.push(currentField.trim());
                     currentField = '';
@@ -415,177 +343,106 @@
                         currentRow.push(currentField.trim());
                         rows.push(currentRow);
                     }
-                    currentRow = [];
-                    currentField = '';
-                    // Handle \r\n
-                    if (char === '\r' && nextChar === '\n') i++;
-                } else {
-                    currentField += char;
-                }
+                    currentRow = []; currentField = '';
+                    if (char === '\r' && text[i+1] === '\n') i++;
+                } else { currentField += char; }
             }
-            // Add last field/row if exists
-            if (currentField || currentRow.length > 0) {
-                currentRow.push(currentField.trim());
-                rows.push(currentRow);
-            }
+            if (currentField || currentRow.length > 0) { currentRow.push(currentField.trim()); rows.push(currentRow); }
             return rows;
         }
 
-        // Helper to clean URLs (Remove commas, spaces, quotes, etc.)
+        // IMPROVED URL CLEANER: Handles missing protocols and garbage characters
         function cleanUrl(url) {
             if (!url) return '';
             let cleaned = url.trim();
-            // Remove quotes
-            cleaned = cleaned.replace(/['"]/g, '');
-            // Remove trailing commas or semicolons (common copy-paste errors)
-            cleaned = cleaned.replace(/[,;]+$/, '');
+            // Remove quotes and leading/trailing punctuation commonly found in CSV/Copy-Paste
+            cleaned = cleaned.replace(/^['",]+|['",]+$/g, '');
             // Remove invisible characters
             cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');
+            
+            if (cleaned === '') return '';
+
+            // If it doesn't start with a protocol, assume it's a vercel/web link and prepend https://
+            // This prevents the 404 NOT_FOUND relative path error
+            if (!/^https?:\/\//i.test(cleaned)) {
+                cleaned = 'https://' + cleaned;
+            }
             return cleaned;
         }
 
-        // Load data from Google Sheets
         async function loadFromGoogleSheets() {
             const response = await fetch(GOOGLE_SHEET_URL);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
             const csvText = await response.text();
-            
-            // Use robust CSV parser
             const rows = parseCSV(csvText);
             
-            if (rows.length < 2) throw new Error("Sheet is empty or missing headers");
-
-            // Extract headers (remove quotes just in case, though parser handles it)
+            if (rows.length < 2) return;
             const headers = rows[0].map(h => h.replace(/^"|"$/g, '').trim());
             
             const apps = [];
-            let brokenCount = 0;
-            
-            // Start from index 1 (skip header)
             for (let i = 1; i < rows.length; i++) {
                 const values = rows[i];
-                
-                // If row is empty or has too few columns, skip it
                 if (values.length <= 1 && values[0] === '') continue;
-
                 const app = {};
-                headers.forEach((header, index) => {
-                    // Map headers to values
-                    let val = values[index] || '';
-                    // Clean up any remaining quotes
-                    val = val.replace(/^"|"$/g, ''); 
-                    
-                    // Specific cleaning for URL field
-                    if (header === 'App URL') {
-                        val = cleanUrl(val);
-                    }
-                    
+                headers.forEach((header, idx) => {
+                    let val = (values[idx] || '').replace(/^"|"$/g, '');
+                    if (header === 'App URL') val = cleanUrl(val);
                     app[header] = val;
                 });
-                
-                // VALIDATION:
-                // Ensure essential fields exist.
-                if (app['App Name'] && app['App URL']) {
-                    apps.push(app);
-                } else {
-                    if (values.length > 1) brokenCount++; // Count rows that looked like data but failed
-                }
+                if (app['App Name'] && app['App URL']) apps.push(app);
             }
-            
-            allApps = [...apps, ...MANUAL_APPS];
+            allApps = apps;
             renderApps();
         }
 
-        // Render all apps
         function renderApps() {
             const grid = document.getElementById('app-grid');
-            const subjectFilter = document.getElementById('subject-filter').value;
-            const levelFilter = document.getElementById('level-filter').value;
+            const subF = document.getElementById('subject-filter').value;
+            const levF = document.getElementById('level-filter').value;
 
-            // Filter apps
-            const filteredApps = allApps.filter(app => {
-                // Normalize data for matching
-                const appSubject = (app.Subject || '').trim();
-                const appLevel = (app.Level || '').trim();
-
-                const matchSubject = subjectFilter === 'all' || appSubject === subjectFilter;
-                const matchLevel = levelFilter === 'all' || appLevel === levelFilter;
-                return matchSubject && matchLevel;
+            const filtered = allApps.filter(app => {
+                const mS = subF === 'all' || (app.Subject || '').trim() === subF;
+                const mL = levF === 'all' || (app.Level || '').trim() === levF;
+                return mS && mL;
             });
 
-            // Update stats
-            document.getElementById('stats').textContent = 
-                `Showing ${filteredApps.length} of ${allApps.length} apps`;
+            document.getElementById('stats').textContent = `Showing ${filtered.length} of ${allApps.length} apps`;
+            grid.innerHTML = filtered.length ? '' : '<div class="no-results"><h3>No apps found</h3></div>';
 
-            // Clear grid
-            grid.innerHTML = '';
-
-            // Render filtered apps
-            if (filteredApps.length === 0) {
-                grid.innerHTML = `
-                    <div class="no-results">
-                        <h3>No apps found</h3>
-                        <p>Try adjusting your filters or check the Google Sheet.</p>
+            filtered.forEach(app => {
+                const card = document.createElement('div');
+                card.className = 'app-card';
+                const subject = (app.Subject || 'General').trim();
+                const subjectClass = subject.toLowerCase();
+                const levelLabel = LEVEL_LABELS[app.Level] || app.Level || 'General';
+                
+                card.innerHTML = `
+                    <div class="app-header">
+                        <div class="app-badges">
+                            <span class="badge subject ${subjectClass}">${subject}</span>
+                            <span class="badge level">${levelLabel}</span>
+                        </div>
                     </div>
+                    <div class="app-name">${app['App Name']}</div>
+                    <div class="app-description">${app.Description || 'Interactive educational tool.'}</div>
+                    <a href="${app['App URL']}" target="_blank" class="app-link">Open App →</a>
                 `;
-                return;
-            }
-
-            // Render in order
-            filteredApps.forEach(app => {
-                const card = createAppCard(app);
                 grid.appendChild(card);
             });
         }
 
-        // Create app card element
-        function createAppCard(app) {
-            const card = document.createElement('div');
-            card.className = 'app-card';
-            
-            const levelCode = (app.Level || '').trim();
-            const levelLabel = LEVEL_LABELS[levelCode] || levelCode;
-            const subject = (app.Subject || 'General').trim();
-            const url = app['App URL'];
-            
-            // Determine subject class for color coding
-            let subjectClass = '';
-            if (subject === 'Maths') subjectClass = 'maths';
-            else if (subject === 'Physics') subjectClass = 'physics';
-            else if (subject === 'Computer') subjectClass = 'computer';
-            
-            card.innerHTML = `
-                <div class="app-header">
-                    <div class="app-badges">
-                        <span class="badge subject ${subjectClass}">${subject}</span>
-                        <span class="badge level">${levelLabel}</span>
-                    </div>
-                </div>
-                <div class="app-name">${app['App Name']}</div>
-                <div class="app-description">${app.Description || 'No description available'}</div>
-                <a href="${url}" target="_blank" class="app-link" title="Go to: ${url}">Open App →</a>
-            `;
-            
-            return card;
-        }
-
-        // Reset filters
         function resetFilters() {
             document.getElementById('subject-filter').value = 'all';
             document.getElementById('level-filter').value = 'all';
             renderApps();
         }
 
-        // Event listeners
         document.getElementById('subject-filter').addEventListener('change', renderApps);
         document.getElementById('level-filter').addEventListener('change', renderApps);
-
-        // Initialize on load
         window.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
+
 
 
 
