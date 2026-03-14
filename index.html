@@ -5,442 +5,323 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Educational Apps Directory</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
         }
-
         header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-            margin-bottom: 15px;
-        }
-
-        .subject-icons {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin: 20px 0 10px 0;
-            font-size: 2em;
-        }
-
-        .copyright {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-top: 10px;
-        }
-
-        .filters {
-            padding: 30px;
-            background: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
-        }
-
-        .filter-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-item {
-            flex: 1;
-            min-width: 180px;
-        }
-
-        .filter-item label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #495057;
-        }
-
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        header p { font-size: 1.1em; opacity: 0.9; margin-bottom: 15px; }
+        .subject-icons { display: flex; justify-content: center; gap: 30px; margin: 20px 0 10px 0; font-size: 2em; }
+        .copyright { font-size: 0.9em; opacity: 0.8; margin-top: 10px; }
+        .filters { padding: 30px; background: #f8f9fa; border-bottom: 2px solid #e9ecef; }
+        .filter-group { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
+        .filter-item { flex: 1; min-width: 180px; }
+        .filter-item label { display: block; font-weight: 600; margin-bottom: 8px; color: #495057; }
         select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            font-size: 15px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s;
+            width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px;
+            font-size: 15px; background: white; cursor: pointer; transition: all 0.3s;
         }
-
         select:hover { border-color: #667eea; }
-        select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
-
+        select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
         .reset-btn {
-            padding: 12px 25px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            align-self: flex-end;
+            padding: 12px 25px; background: #667eea; color: white; border: none;
+            border-radius: 8px; font-size: 15px; cursor: pointer; transition: all 0.3s; align-self: flex-end;
         }
-
-        .reset-btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
+        .reset-btn:hover { background: #5568d3; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.3); }
         .apps-container { padding: 30px; }
-
         .stats {
-            text-align: center;
-            padding: 12px;
-            background: #e7f3ff;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            font-size: 1.1em;
-            color: #495057;
+            text-align: center; padding: 12px; background: #e7f3ff;
+            border-radius: 8px; margin-bottom: 25px; font-size: 1.1em; color: #495057;
         }
-
         .app-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
         }
-
         .app-card {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 20px;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
+            background: white; border: 2px solid #e9ecef; border-radius: 10px;
+            padding: 20px; transition: all 0.3s; display: flex; flex-direction: column;
         }
-
-        .app-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            border-color: #667eea;
-        }
-
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 12px;
-        }
-
-        .app-name {
-            font-size: 1.25em;
-            font-weight: 700;
-            color: #212529;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .app-badges {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-        }
-
-        .badge {
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
+        .app-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #667eea; }
+        .app-card.is-pay { border-color: #f0e0ff; }
+        .app-card.is-pay:hover { border-color: #9b59b6; box-shadow: 0 8px 20px rgba(155,89,182,0.15); }
+        .app-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+        .app-name { font-size: 1.25em; font-weight: 700; color: #212529; margin-bottom: 10px; line-height: 1.3; }
+        .app-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge.subject { color: white; }
-        .badge.subject.maths { background: #2196F3; }
+        .badge.subject.maths   { background: #2196F3; }
         .badge.subject.physics { background: #f44336; }
-        .badge.subject.computer { background: #4CAF50; }
+        .badge.subject.computer{ background: #4CAF50; }
         .badge.subject.general { background: #9c27b0; }
-
         .badge.level { background: #fff3cd; color: #856404; }
-        .badge.type { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
-
-        .app-description {
-            color: #6c757d;
-            line-height: 1.5;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-            flex-grow: 1;
-        }
-
+        .badge.type  { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
+        /* Pay badge */
+        .badge.pay-badge { background: #f3e8ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+        .app-description { color: #6c757d; line-height: 1.5; margin-bottom: 20px; font-size: 0.95em; flex-grow: 1; }
+        /* Standard launch button */
         .app-link {
-            display: inline-block;
-            text-align: center;
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s;
+            display: inline-block; text-align: center; padding: 10px 20px;
+            background: #667eea; color: white; text-decoration: none;
+            border-radius: 6px; font-weight: 600; transition: all 0.3s;
         }
-
         .app-link:hover { background: #5568d3; }
-
-        .no-results {
-            text-align: center;
-            grid-column: 1 / -1;
-            padding: 60px 20px;
-            color: #6c757d;
+        /* Pay / subscriber button */
+        .app-link.app-link-pay {
+            background: transparent;
+            color: #7c3aed;
+            border: 2px solid #ddd6fe;
         }
-
-        footer {
-            background: rgba(0,0,0,0.05);
-            padding: 20px;
-            text-align: center;
-            border-top: 1px solid #e9ecef;
-        }
-
-        @media (max-width: 768px) {
-            .filter-group { flex-direction: column; }
-            .filter-item { width: 100%; }
-        }
+        .app-link.app-link-pay:hover { background: #f3e8ff; border-color: #7c3aed; }
+        .no-results { text-align: center; grid-column: 1/-1; padding: 60px 20px; color: #6c757d; }
+        footer { background: rgba(0,0,0,0.05); padding: 20px; text-align: center; border-top: 1px solid #e9ecef; }
+        @media(max-width:768px){ .filter-group{flex-direction:column;} .filter-item{width:100%;} }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📚 Educational Apps Directory</h1>
-            <p>Interactive tools for Maths, Physics, and Computer Science</p>
-            <div class="subject-icons">
-                <span title="Mathematics">∑ π ∫</span>
-                <span title="Physics">⚛ ⚡ 🔬</span>
-                <span title="Computer Science">💻 {} &lt;/&gt;</span>
-            </div>
-            <div class="copyright">© LeeMcCullochJames</div>
-        </header>
-
-        <div class="filters">
-            <div class="filter-group">
-                <div class="filter-item">
-                    <label for="subject-filter">Subject:</label>
-                    <select id="subject-filter">
-                        <option value="all">All Subjects</option>
-                        <option value="Maths">Mathematics</option>
-                        <option value="Physics">Physics</option>
-                        <option value="Computer">Computer Science</option>
-                    </select>
-                </div>
-                <div class="filter-item">
-                    <label for="level-filter">Level:</label>
-                    <select id="level-filter">
-                        <option value="all">All Levels</option>
-                        <option value="M">Middle School</option>
-                        <option value="H">High School</option>
-                        <option value="U">Undergraduate</option>
-                    </select>
-                </div>
-                <div class="filter-item">
-                    <label for="type-filter">Category Type:</label>
-                    <select id="type-filter">
-                        <option value="all">All Categories</option>
-                        <!-- Options populated dynamically from sheet Column F -->
-                    </select>
-                </div>
-                <button class="reset-btn" onclick="resetFilters()">Reset</button>
-            </div>
+<div class="container">
+    <header>
+        <h1>📚 Educational Apps Directory</h1>
+        <p>Interactive tools for Maths, Physics, and Computer Science</p>
+        <div class="subject-icons">
+            <span title="Mathematics">∑ π ∫</span>
+            <span title="Physics">⚛ ⚡ 🔬</span>
+            <span title="Computer Science">💻 {} &lt;/&gt;</span>
         </div>
+        <div class="copyright">© LeeMcCullochJames</div>
+    </header>
 
-        <div class="apps-container">
-            <div class="stats" id="stats">Connecting to database...</div>
-            <div class="app-grid" id="app-grid"></div>
+    <div class="filters">
+        <div class="filter-group">
+            <div class="filter-item">
+                <label for="subject-filter">Subject:</label>
+                <select id="subject-filter">
+                    <option value="all">All Subjects</option>
+                    <option value="Maths">Mathematics</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Computer">Computer Science</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label for="level-filter">Level:</label>
+                <select id="level-filter">
+                    <option value="all">All Levels</option>
+                    <option value="M">Middle School</option>
+                    <option value="H">High School</option>
+                    <option value="U">Undergraduate</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label for="type-filter">Category Type:</label>
+                <select id="type-filter">
+                    <option value="all">All Categories</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label for="access-filter">Access:</label>
+                <select id="access-filter">
+                    <option value="all">Free &amp; Subscriber</option>
+                    <option value="Free">Free only</option>
+                    <option value="Pay">Subscriber only</option>
+                </select>
+            </div>
+            <button class="reset-btn" onclick="resetFilters()">Reset</button>
         </div>
-
-        <footer>
-            <div class="copyright">© LeeMcCullochJames</div>
-        </footer>
     </div>
 
-    <script>
-        const SHEET_ID = '1OsRlN-hDqrVuPReCq_yKZfF-RZB9Umg5macHqvLz478';
-        const SHEET_NAME = 'Extracting+Project+Links+and+URLs';
-        const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
-        
-        const LEVEL_LABELS = { 'M': 'Middle School', 'H': 'High School', 'U': 'Undergraduate' };
-        let allApps = [];
+    <div class="apps-container">
+        <div class="stats" id="stats">Connecting to database...</div>
+        <div class="app-grid" id="app-grid"></div>
+    </div>
 
-        async function initializeApp() {
-            try {
-                await loadFromGoogleSheets();
-            } catch (error) {
-                console.error(error);
-                document.getElementById('stats').innerHTML = `<div style="color:red">Error loading data. Please check the Google Sheet sharing settings.</div>`;
-            }
+    <footer>
+        <div class="copyright">© LeeMcCullochJames</div>
+    </footer>
+</div>
+
+<script>
+    const SHEET_ID   = '1OsRlN-hDqrVuPReCq_yKZfF-RZB9Umg5macHqvLz478';
+    const SHEET_NAME = 'Extracting+Project+Links+and+URLs';
+    const GOOGLE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
+    const SUBSTACK_URL = 'https://leemccullochjames.substack.com/subscribe';
+
+    const LEVEL_LABELS = { 'M': 'Middle School', 'H': 'High School', 'U': 'Undergraduate' };
+    let allApps = [];
+
+    async function initializeApp() {
+        try {
+            await loadFromGoogleSheets();
+        } catch(error) {
+            console.error(error);
+            document.getElementById('stats').innerHTML =
+                `<div style="color:red">Error loading data. Please check the Google Sheet sharing settings.</div>`;
         }
+    }
 
-        function parseCSV(text) {
-            const rows = [];
-            let currentRow = [];
-            let currentField = '';
-            let insideQuotes = false;
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                if (char === '"') {
-                    if (insideQuotes && text[i+1] === '"') { currentField += '"'; i++; }
-                    else { insideQuotes = !insideQuotes; }
-                } else if (char === ',' && !insideQuotes) {
-                    currentRow.push(currentField.trim());
-                    currentField = '';
-                } else if ((char === '\n' || char === '\r') && !insideQuotes) {
-                    if (currentField || currentRow.length > 0) {
-                        currentRow.push(currentField.trim());
-                        rows.push(currentRow);
-                    }
-                    currentRow = []; currentField = '';
-                    if (char === '\r' && text[i+1] === '\n') i++;
-                } else { currentField += char; }
-            }
-            if (currentField || currentRow.length > 0) { currentRow.push(currentField.trim()); rows.push(currentRow); }
-            return rows;
-        }
-
-        function cleanUrl(url) {
-            if (!url) return '';
-            let cleaned = url.trim();
-            cleaned = cleaned.replace(/^['",]+|['",]+$/g, '');
-            cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');
-            if (cleaned === '') return '';
-            if (!/^https?:\/\//i.test(cleaned)) {
-                cleaned = 'https://' + cleaned;
-            }
-            return cleaned;
-        }
-
-        async function loadFromGoogleSheets() {
-            const response = await fetch(GOOGLE_SHEET_URL);
-            const csvText = await response.text();
-            const rows = parseCSV(csvText);
-            
-            if (rows.length < 2) return;
-            const headers = rows[0].map(h => h.replace(/^"|"$/g, '').trim());
-            
-            const apps = [];
-            const typesSet = new Set();
-
-            for (let i = 1; i < rows.length; i++) {
-                const values = rows[i];
-                if (values.length <= 1 && values[0] === '') continue;
-                
-                const app = {};
-                headers.forEach((header, idx) => {
-                    let val = (values[idx] || '').replace(/^"|"$/g, '').trim();
-                    if (header === 'App URL') val = cleanUrl(val);
-                    app[header] = val;
-                });
-
-                if (app['App Name'] && app['App URL']) {
-                    apps.push(app);
-                    if (app['Type']) typesSet.add(app['Type']);
+    function parseCSV(text) {
+        const rows = [];
+        let currentRow = [], currentField = '', insideQuotes = false;
+        for (let i = 0; i < text.length; i++) {
+            const char = text[i];
+            if (char === '"') {
+                if (insideQuotes && text[i+1] === '"') { currentField += '"'; i++; }
+                else { insideQuotes = !insideQuotes; }
+            } else if (char === ',' && !insideQuotes) {
+                currentRow.push(currentField.trim()); currentField = '';
+            } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+                if (currentField || currentRow.length > 0) {
+                    currentRow.push(currentField.trim()); rows.push(currentRow);
                 }
+                currentRow = []; currentField = '';
+                if (char === '\r' && text[i+1] === '\n') i++;
+            } else { currentField += char; }
+        }
+        if (currentField || currentRow.length > 0) { currentRow.push(currentField.trim()); rows.push(currentRow); }
+        return rows;
+    }
+
+    function cleanUrl(url) {
+        if (!url) return '';
+        let cleaned = url.trim().replace(/^['",]+|['",]+$/g, '').replace(/[\u200B-\u200D\uFEFF]/g, '');
+        if (cleaned === '') return '';
+        if (!/^https?:\/\//i.test(cleaned)) cleaned = 'https://' + cleaned;
+        return cleaned;
+    }
+
+    async function loadFromGoogleSheets() {
+        const response = await fetch(GOOGLE_SHEET_URL);
+        const csvText  = await response.text();
+        const rows     = parseCSV(csvText);
+        if (rows.length < 2) return;
+
+        const headers = rows[0].map(h => h.replace(/^"|"$/g, '').trim());
+        const apps = [];
+        const typesSet = new Set();
+
+        for (let i = 1; i < rows.length; i++) {
+            const values = rows[i];
+            if (values.length <= 1 && values[0] === '') continue;
+            const app = {};
+            headers.forEach((header, idx) => {
+                let val = (values[idx] || '').replace(/^"|"$/g, '').trim();
+                if (header === 'App URL') val = cleanUrl(val);
+                app[header] = val;
+            });
+            if (app['App Name'] && app['App URL']) {
+                apps.push(app);
+                if (app['Type']) typesSet.add(app['Type']);
             }
-
-            allApps = apps;
-            populateTypeFilter(Array.from(typesSet).sort());
-            renderApps();
         }
 
-        function populateTypeFilter(types) {
-            const select = document.getElementById('type-filter');
-            // Keep the "All" option
-            select.innerHTML = '<option value="all">All Categories</option>';
-            types.forEach(type => {
-                if (!type) return;
-                const opt = document.createElement('option');
-                opt.value = type;
-                opt.textContent = type;
-                select.appendChild(opt);
-            });
+        allApps = apps;
+        populateTypeFilter(Array.from(typesSet).sort());
+        renderApps();
+    }
+
+    function populateTypeFilter(types) {
+        const select = document.getElementById('type-filter');
+        select.innerHTML = '<option value="all">All Categories</option>';
+        types.forEach(type => {
+            if (!type) return;
+            const opt = document.createElement('option');
+            opt.value = type; opt.textContent = type;
+            select.appendChild(opt);
+        });
+    }
+
+    function renderApps() {
+        const grid    = document.getElementById('app-grid');
+        const subF    = document.getElementById('subject-filter').value;
+        const levF    = document.getElementById('level-filter').value;
+        const typF    = document.getElementById('type-filter').value;
+        const accF    = document.getElementById('access-filter').value;
+
+        const filtered = allApps.filter(app => {
+            const mS = subF === 'all' || (app.Subject || '').trim() === subF;
+            const mL = levF === 'all' || (app.Level   || '').trim() === levF;
+            const mT = typF === 'all' || (app.Type    || '').trim() === typF;
+            // Sub column: blank or "Free" = free; "Pay" = subscriber
+            const subVal = (app.Sub || app['Sub'] || '').trim();
+            const mA = accF === 'all'
+                || (accF === 'Free' && subVal.toLowerCase() !== 'pay')
+                || (accF === 'Pay'  && subVal.toLowerCase() === 'pay');
+            return mS && mL && mT && mA;
+        });
+
+        document.getElementById('stats').textContent =
+            `Showing ${filtered.length} of ${allApps.length} apps`;
+
+        if (!filtered.length) {
+            grid.innerHTML = '<div class="no-results"><h3>No matches found for these filters</h3><p>Try resetting filters to see more results.</p></div>';
+            return;
         }
+        grid.innerHTML = '';
 
-        function renderApps() {
-            const grid = document.getElementById('app-grid');
-            const subF = document.getElementById('subject-filter').value;
-            const levF = document.getElementById('level-filter').value;
-            const typF = document.getElementById('type-filter').value;
+        filtered.forEach(app => {
+            const card    = document.createElement('div');
+            const subject = (app.Subject || 'General').trim();
+            const subjectClass = subject.toLowerCase();
+            const levelLabel   = LEVEL_LABELS[app.Level] || app.Level || 'General';
+            const type         = app.Type || 'Resource';
 
-            const filtered = allApps.filter(app => {
-                const mS = subF === 'all' || (app.Subject || '').trim() === subF;
-                const mL = levF === 'all' || (app.Level || '').trim() === levF;
-                const mT = typF === 'all' || (app.Type || '').trim() === typF;
-                return mS && mL && mT;
-            });
+            // ── Access logic ──────────────────────────────────────────────
+            const isPay   = (app.Sub || '').trim().toLowerCase() === 'pay';
+            const linkHref = isPay ? SUBSTACK_URL : app['App URL'];
+            const linkText = isPay ? '🔒 Subscriber Access →' : 'Launch Project →';
+            const linkCls  = isPay ? 'app-link app-link-pay' : 'app-link';
 
-            document.getElementById('stats').textContent = `Showing ${filtered.length} of ${allApps.length} apps`;
-            grid.innerHTML = filtered.length ? '' : '<div class="no-results"><h3>No matches found for these filters</h3><p>Try resetting filters to see more results.</p></div>';
-
-            filtered.forEach(app => {
-                const card = document.createElement('div');
-                card.className = 'app-card';
-                const subject = (app.Subject || 'General').trim();
-                const subjectClass = subject.toLowerCase();
-                const levelLabel = LEVEL_LABELS[app.Level] || app.Level || 'General';
-                const type = app.Type || 'Resource';
-                
-                card.innerHTML = `
-                    <div class="app-header">
-                        <div class="app-badges">
-                            <span class="badge subject ${subjectClass}">${subject}</span>
-                            <span class="badge level">${levelLabel}</span>
-                            <span class="badge type">${type}</span>
-                        </div>
+            card.className = `app-card${isPay ? ' is-pay' : ''}`;
+            card.innerHTML = `
+                <div class="app-header">
+                    <div class="app-badges">
+                        <span class="badge subject ${subjectClass}">${subject}</span>
+                        <span class="badge level">${levelLabel}</span>
+                        <span class="badge type">${type}</span>
+                        ${isPay ? '<span class="badge pay-badge">Subscriber</span>' : ''}
                     </div>
-                    <div class="app-name">${app['App Name']}</div>
-                    <div class="app-description">${app.Description || 'Interactive educational tool.'}</div>
-                    <a href="${app['App URL']}" target="_blank" class="app-link">Launch Project →</a>
-                `;
-                grid.appendChild(card);
-            });
-        }
+                </div>
+                <div class="app-name">${app['App Name']}</div>
+                <div class="app-description">${app.Description || 'Interactive educational tool.'}</div>
+                <a href="${linkHref}" target="_blank" class="${linkCls}">${linkText}</a>
+            `;
+            grid.appendChild(card);
+        });
+    }
 
-        function resetFilters() {
-            document.getElementById('subject-filter').value = 'all';
-            document.getElementById('level-filter').value = 'all';
-            document.getElementById('type-filter').value = 'all';
-            renderApps();
-        }
+    function resetFilters() {
+        document.getElementById('subject-filter').value = 'all';
+        document.getElementById('level-filter').value   = 'all';
+        document.getElementById('type-filter').value    = 'all';
+        document.getElementById('access-filter').value  = 'all';
+        renderApps();
+    }
 
-        document.getElementById('subject-filter').addEventListener('change', renderApps);
-        document.getElementById('level-filter').addEventListener('change', renderApps);
-        document.getElementById('type-filter').addEventListener('change', renderApps);
-        window.addEventListener('DOMContentLoaded', initializeApp);
-    </script>
+    document.getElementById('subject-filter').addEventListener('change', renderApps);
+    document.getElementById('level-filter').addEventListener('change', renderApps);
+    document.getElementById('type-filter').addEventListener('change', renderApps);
+    document.getElementById('access-filter').addEventListener('change', renderApps);
+    window.addEventListener('DOMContentLoaded', initializeApp);
+</script>
 </body>
 </html>
+
 
 
 
