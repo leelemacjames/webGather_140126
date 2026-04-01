@@ -30,22 +30,76 @@
         header p { font-size: 1.1em; opacity: 0.9; margin-bottom: 15px; }
         .subject-icons { display: flex; justify-content: center; gap: 30px; margin: 20px 0 10px 0; font-size: 2em; }
         .copyright { font-size: 0.9em; opacity: 0.8; margin-top: 10px; }
+
         .filters { padding: 30px; background: #f8f9fa; border-bottom: 2px solid #e9ecef; }
-        .filter-group { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
+        .filter-group { display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; }
         .filter-item { flex: 1; min-width: 180px; }
         .filter-item label { display: block; font-weight: 600; margin-bottom: 8px; color: #495057; }
-        select {
+        select, .search-input {
             width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px;
-            font-size: 15px; background: white; cursor: pointer; transition: all 0.3s;
+            font-size: 15px; background: white; transition: all 0.3s;
         }
-        select:hover { border-color: #667eea; }
-        select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        select { cursor: pointer; }
+        select:hover, .search-input:hover { border-color: #667eea; }
+        select:focus, .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .dashboard-tools {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: inline-flex;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .view-btn {
+            padding: 10px 14px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .view-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
         .reset-btn {
-            padding: 12px 25px; background: #667eea; color: white; border: none;
-            border-radius: 8px; font-size: 15px; cursor: pointer; transition: all 0.3s; align-self: flex-end;
+            padding: 12px 20px; background: #667eea; color: white; border: none;
+            border-radius: 8px; font-size: 15px; cursor: pointer; transition: all 0.3s;
         }
         .reset-btn:hover { background: #5568d3; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.3); }
+
         .apps-container { padding: 30px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .stat-card {
+            background: #eef4ff;
+            border: 1px solid #dbe7ff;
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .stat-card .label { color: #5c6780; font-size: 0.85rem; }
+        .stat-card .value { color: #243255; font-size: 1.35rem; font-weight: 700; }
+
         .stats {
             text-align: center; padding: 12px; background: #e7f3ff;
             border-radius: 8px; margin-bottom: 25px; font-size: 1.1em; color: #495057;
@@ -55,6 +109,11 @@
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 20px;
         }
+
+        .app-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
         .app-card {
             background: white; border: 2px solid #e9ecef; border-radius: 10px;
             padding: 20px; transition: all 0.3s; display: flex; flex-direction: column;
@@ -73,17 +132,14 @@
         .badge.subject.general { background: #9c27b0; }
         .badge.level { background: #fff3cd; color: #856404; }
         .badge.type  { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
-        /* Pay badge */
         .badge.pay-badge { background: #f3e8ff; color: #7c3aed; border: 1px solid #ddd6fe; }
         .app-description { color: #6c757d; line-height: 1.5; margin-bottom: 20px; font-size: 0.95em; flex-grow: 1; }
-        /* Standard launch button */
         .app-link {
             display: inline-block; text-align: center; padding: 10px 20px;
             background: #667eea; color: white; text-decoration: none;
             border-radius: 6px; font-weight: 600; transition: all 0.3s;
         }
         .app-link:hover { background: #5568d3; }
-        /* Pay / subscriber button */
         .app-link.app-link-pay {
             background: transparent;
             color: #7c3aed;
@@ -92,7 +148,14 @@
         .app-link.app-link-pay:hover { background: #f3e8ff; border-color: #7c3aed; }
         .no-results { text-align: center; grid-column: 1/-1; padding: 60px 20px; color: #6c757d; }
         footer { background: rgba(0,0,0,0.05); padding: 20px; text-align: center; border-top: 1px solid #e9ecef; }
-        @media(max-width:768px){ .filter-group{flex-direction:column;} .filter-item{width:100%;} }
+
+        @media(max-width:768px){
+            .filter-group{flex-direction:column;}
+            .filter-item{width:100%;}
+            .dashboard-tools { flex-direction: column; align-items: stretch; }
+            .view-toggle { width: 100%; }
+            .view-btn { flex: 1; }
+        }
     </style>
 </head>
 <body>
@@ -142,11 +205,34 @@
                     <option value="Pay">Subscriber only</option>
                 </select>
             </div>
+            <div class="filter-item">
+                <label for="sort-filter">Sort by:</label>
+                <select id="sort-filter">
+                    <option value="name-asc">Name (A → Z)</option>
+                    <option value="name-desc">Name (Z → A)</option>
+                    <option value="subject">Subject</option>
+                    <option value="level">Level</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="dashboard-tools">
+            <div class="filter-item" style="flex: 2; min-width: 260px;">
+                <label for="search-input">Search apps:</label>
+                <input class="search-input" id="search-input" type="text" placeholder="Try 'trigonometry', 'simulator', 'python'..." />
+            </div>
+
+            <div class="view-toggle" role="group" aria-label="Card view toggle">
+                <button class="view-btn active" id="grid-view-btn" type="button">🔲 Grid</button>
+                <button class="view-btn" id="list-view-btn" type="button">📋 List</button>
+            </div>
+
             <button class="reset-btn" onclick="resetFilters()">Reset</button>
         </div>
     </div>
 
     <div class="apps-container">
+        <div class="stats-grid" id="stats-grid"></div>
         <div class="stats" id="stats">Connecting to database...</div>
         <div class="app-grid" id="app-grid"></div>
     </div>
@@ -163,7 +249,9 @@
     const SUBSTACK_URL = 'https://leemccullochjames.substack.com/subscribe';
 
     const LEVEL_LABELS = { 'M': 'Middle School', 'H': 'High School', 'U': 'Undergraduate' };
+    const LEVEL_ORDER = { 'M': 1, 'H': 2, 'U': 3 };
     let allApps = [];
+    let currentView = 'grid';
 
     async function initializeApp() {
         try {
@@ -246,42 +334,93 @@
         });
     }
 
+    function sortApps(apps, sortType) {
+        const sorted = [...apps];
+        sorted.sort((a, b) => {
+            const nameA = (a['App Name'] || '').toLowerCase();
+            const nameB = (b['App Name'] || '').toLowerCase();
+            const subjectA = (a.Subject || '').toLowerCase();
+            const subjectB = (b.Subject || '').toLowerCase();
+            const levelA = LEVEL_ORDER[(a.Level || '').trim()] || 99;
+            const levelB = LEVEL_ORDER[(b.Level || '').trim()] || 99;
+
+            switch(sortType) {
+                case 'name-desc': return nameB.localeCompare(nameA);
+                case 'subject': {
+                    const s = subjectA.localeCompare(subjectB);
+                    return s !== 0 ? s : nameA.localeCompare(nameB);
+                }
+                case 'level': {
+                    const l = levelA - levelB;
+                    return l !== 0 ? l : nameA.localeCompare(nameB);
+                }
+                case 'name-asc':
+                default: return nameA.localeCompare(nameB);
+            }
+        });
+        return sorted;
+    }
+
+    function renderStats(filtered) {
+        const freeCount = filtered.filter(app => (app.Sub || '').trim().toLowerCase() !== 'pay').length;
+        const payCount = filtered.length - freeCount;
+        const subjectCount = new Set(filtered.map(app => (app.Subject || 'General').trim())).size;
+
+        document.getElementById('stats-grid').innerHTML = `
+            <div class="stat-card"><div class="label">Visible Apps</div><div class="value">${filtered.length}</div></div>
+            <div class="stat-card"><div class="label">Free</div><div class="value">${freeCount}</div></div>
+            <div class="stat-card"><div class="label">Subscriber</div><div class="value">${payCount}</div></div>
+            <div class="stat-card"><div class="label">Subjects</div><div class="value">${subjectCount}</div></div>
+        `;
+    }
+
     function renderApps() {
         const grid    = document.getElementById('app-grid');
         const subF    = document.getElementById('subject-filter').value;
         const levF    = document.getElementById('level-filter').value;
         const typF    = document.getElementById('type-filter').value;
         const accF    = document.getElementById('access-filter').value;
+        const sortF   = document.getElementById('sort-filter').value;
+        const query   = document.getElementById('search-input').value.trim().toLowerCase();
 
         const filtered = allApps.filter(app => {
             const mS = subF === 'all' || (app.Subject || '').trim() === subF;
             const mL = levF === 'all' || (app.Level   || '').trim() === levF;
             const mT = typF === 'all' || (app.Type    || '').trim() === typF;
-            // Sub column: blank or "Free" = free; "Pay" = subscriber
             const subVal = (app.Sub || app['Sub'] || '').trim();
             const mA = accF === 'all'
                 || (accF === 'Free' && subVal.toLowerCase() !== 'pay')
                 || (accF === 'Pay'  && subVal.toLowerCase() === 'pay');
-            return mS && mL && mT && mA;
+
+            const haystack = [app['App Name'], app.Description, app.Subject, app.Type]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+            const mQ = !query || haystack.includes(query);
+
+            return mS && mL && mT && mA && mQ;
         });
 
-        document.getElementById('stats').textContent =
-            `Showing ${filtered.length} of ${allApps.length} apps`;
+        const ordered = sortApps(filtered, sortF);
 
-        if (!filtered.length) {
-            grid.innerHTML = '<div class="no-results"><h3>No matches found for these filters</h3><p>Try resetting filters to see more results.</p></div>';
+        renderStats(ordered);
+
+        document.getElementById('stats').textContent =
+            `Showing ${ordered.length} of ${allApps.length} apps`;
+
+        if (!ordered.length) {
+            grid.innerHTML = '<div class="no-results"><h3>No matches found for these filters</h3><p>Try resetting filters or broadening your search.</p></div>';
             return;
         }
         grid.innerHTML = '';
 
-        filtered.forEach(app => {
+        ordered.forEach(app => {
             const card    = document.createElement('div');
             const subject = (app.Subject || 'General').trim();
             const subjectClass = subject.toLowerCase();
             const levelLabel   = LEVEL_LABELS[app.Level] || app.Level || 'General';
             const type         = app.Type || 'Resource';
 
-            // ── Access logic ──────────────────────────────────────────────
             const isPay   = (app.Sub || '').trim().toLowerCase() === 'pay';
             const linkHref = isPay ? SUBSTACK_URL : app['App URL'];
             const linkText = isPay ? '🔒 Subscriber Access →' : 'Launch Project →';
@@ -305,11 +444,25 @@
         });
     }
 
+    function setView(mode) {
+        const grid = document.getElementById('app-grid');
+        const gridBtn = document.getElementById('grid-view-btn');
+        const listBtn = document.getElementById('list-view-btn');
+
+        currentView = mode;
+        grid.classList.toggle('list-view', mode === 'list');
+        gridBtn.classList.toggle('active', mode === 'grid');
+        listBtn.classList.toggle('active', mode === 'list');
+    }
+
     function resetFilters() {
         document.getElementById('subject-filter').value = 'all';
         document.getElementById('level-filter').value   = 'all';
         document.getElementById('type-filter').value    = 'all';
         document.getElementById('access-filter').value  = 'all';
+        document.getElementById('sort-filter').value    = 'name-asc';
+        document.getElementById('search-input').value   = '';
+        setView('grid');
         renderApps();
     }
 
@@ -317,6 +470,11 @@
     document.getElementById('level-filter').addEventListener('change', renderApps);
     document.getElementById('type-filter').addEventListener('change', renderApps);
     document.getElementById('access-filter').addEventListener('change', renderApps);
+    document.getElementById('sort-filter').addEventListener('change', renderApps);
+    document.getElementById('search-input').addEventListener('input', renderApps);
+    document.getElementById('grid-view-btn').addEventListener('click', () => setView('grid'));
+    document.getElementById('list-view-btn').addEventListener('click', () => setView('list'));
+
     window.addEventListener('DOMContentLoaded', initializeApp);
 </script>
 </body>
