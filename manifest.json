@@ -1,7 +1,7 @@
 {
-  "name": "IB Physics Data Booklet",
-  "short_name": "Data Booklet",
-  "start_url": "./ib_physics_data_booklet_cards.html",
+  "name": "Educational Apps Directory",
+  "short_name": "Apps",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0c0d10",
   "theme_color": "#0c0d10",
