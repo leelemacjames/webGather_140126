@@ -12,9 +12,14 @@
   --text: #e8e6de; --muted: rgba(232,230,222,0.42); --accent: #6abd8a; --r: 12px;
 }
 body { background:var(--bg); color:var(--text); font-family:'IBM Plex Sans',sans-serif; font-weight:300; min-height:100vh; display:flex; flex-direction:column; align-items:center; }
-header { width:100%; max-width:1120px; padding:2.5rem 2rem 1.4rem; border-bottom:1px solid var(--border); margin-bottom:2rem; }
+header { width:100%; max-width:1120px; padding:2.5rem 2rem 1.4rem; border-bottom:1px solid var(--border); margin-bottom:1.2rem; }
 header h1 { font-family:'Cormorant Garamond',serif; font-weight:300; font-size:clamp(1.8rem,3.5vw,2.7rem); letter-spacing:.04em; }
 header p { font-size:.77rem; color:var(--muted); margin-top:.35rem; font-family:'IBM Plex Mono',monospace; letter-spacing:.07em; }
+/* Facet switcher */
+#facet-bar { width:100%; max-width:1120px; padding:0 2rem 1rem; display:flex; gap:.5rem; flex-wrap:wrap; }
+.facet-btn { font-family:'IBM Plex Mono',monospace; font-size:.63rem; letter-spacing:.08em; color:var(--muted); background:none; border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:.32rem .85rem; cursor:pointer; transition:color .2s,border-color .2s,background .2s; }
+.facet-btn:hover { color:var(--text); border-color:rgba(255,255,255,0.3); }
+.facet-btn.active { color:var(--accent); border-color:var(--accent); background:rgba(106,189,138,0.08); }
 /* Deep-link banner */
 #filter-banner { display:none; width:100%; max-width:1120px; margin-bottom:.8rem; padding:.55rem 2rem; }
 #filter-banner-inner { background:rgba(106,189,138,0.1); border:1px solid rgba(106,189,138,0.35); border-radius:8px; padding:.55rem 1rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
@@ -39,7 +44,6 @@ canvas { display:block; width:100%; height:100%; cursor:pointer; }
 .lname  { font-size:.78rem; color:var(--text); flex:1; line-height:1.35; }
 .lnum   { font-family:'IBM Plex Mono',monospace; font-size:.63rem; color:var(--muted); flex-shrink:0; }
 .larrow { font-size:.75rem; color:var(--accent); flex-shrink:0; }
-/* Dimmed category when filter active */
 .legend-item.dimmed { opacity:.28; pointer-events:none; }
 #app-list { margin-top:1.4rem; display:none; }
 #app-list h3 { font-family:'Cormorant Garamond',serif; font-size:1.05rem; font-weight:300; color:var(--text); margin-bottom:.7rem; }
@@ -47,7 +51,6 @@ canvas { display:block; width:100%; height:100%; cursor:pointer; }
 .app-card:hover { border-color:var(--accent); background:rgba(200,169,110,.06); }
 .atitle { font-size:.78rem; color:var(--text); font-weight:400; line-height:1.35; }
 .ameta  { font-family:'IBM Plex Mono',monospace; font-size:.58rem; color:var(--muted); margin-top:.12rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-/* Share link button */
 .share-btn { display:inline-flex; align-items:center; gap:.4rem; background:rgba(106,189,138,0.1); border:1px solid rgba(106,189,138,0.3); color:var(--accent); font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.07em; padding:.38rem .85rem; border-radius:6px; cursor:pointer; transition:background .2s; margin-top:.7rem; }
 .share-btn:hover { background:rgba(106,189,138,0.2); }
 .share-btn svg { flex-shrink:0; }
@@ -59,9 +62,11 @@ canvas { display:block; width:100%; height:100%; cursor:pointer; }
 <body>
 
 <header>
-  <h1>Mathematics Apps — Thematic Pie</h1>
+  <h1 id="header-title">Mathematics Apps — Thematic Pie</h1>
   <p id="header-sub">Outer ring: category · click to reveal apps · click app slice or card to open</p>
 </header>
+
+<div id="facet-bar"></div>
 
 <div id="filter-banner">
   <div id="filter-banner-inner">
@@ -88,7 +93,6 @@ canvas { display:block; width:100%; height:100%; cursor:pointer; }
     <div id="app-list">
       <h3 id="al-title"></h3>
       <div id="al-cards"></div>
-      <!-- Share link area -->
       <button class="share-btn" id="share-btn" onclick="copyShareLink()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         Copy link to this category
@@ -99,41 +103,66 @@ canvas { display:block; width:100%; height:100%; cursor:pointer; }
 </div>
 
 <script>
-// ── Config ─────────────────────────────────────────────────────────────────────
+// ── CONFIG ── the only block that differs between maths/physics/cs pies ──────
+const CONFIG = {
+  subjectMatch: 'maths',          // substring matched against the Subject column
+  subjectLabel: 'Mathematics',    // shown in the centre and the <h1>
+  defaultFacet: 'Domain',         // which column the pie aggregates by default
+  // Facets offered in the switcher bar; each falls back to `fb` if the sheet
+  // hasn't been migrated yet, so this file works with old AND new schemas.
+  facets: [
+    { name: 'Domain', fb: 'Type' },
+    { name: 'Format', fb: 'Type' },
+    { name: 'Theme'  },
+    { name: 'Series' },
+    { name: 'Hub'    },
+    { name: 'Level'  },
+  ],
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
 const SHEET_ID   = '1OsRlN-hDqrVuPReCq_yKZfF-RZB9Umg5macHqvLz478';
 const SHEET_NAME = 'Extracting+Project+Links+and+URLs';
 const FETCH_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
 
-// ── Palette ────────────────────────────────────────────────────────────────────
 const PAL = ['#5b8dd9','#d9845b','#6abd8a','#c46bd9','#d9c45b','#5bbdd9','#d96b8a','#8abd6a','#bd8a5b','#7a5bd9','#5bd9bd','#d95b5b'];
 
-// ── URL parameter helpers ──────────────────────────────────────────────────────
+// ── URL parameters ─────────────────────────────────────────────────────────
+// ?facet=Theme          → aggregate by Theme instead of the default
+// ?type=Eisenstein      → filter to one category (legacy param name kept
+//                         so existing shared links continue to work)
+// ?types=A,B            → filter to several
+function getFacetParam() {
+  const f = new URLSearchParams(location.search).get('facet');
+  return f && CONFIG.facets.some(x => x.name.toLowerCase() === f.toLowerCase())
+    ? CONFIG.facets.find(x => x.name.toLowerCase() === f.toLowerCase()).name
+    : null;
+}
 function getFilterParam() {
   const p = new URLSearchParams(location.search);
-  // ?type=Number-Teach  or  ?types=Number-Teach,Algebra-Teach
   const single = p.get('type');
   const multi  = p.get('types');
   if (single) return [single];
   if (multi)  return multi.split(',').map(s => s.trim()).filter(Boolean);
-  return null; // no filter
+  return null;
 }
-
-// Returns a shareable URL for the given category name(s)
 function makeShareUrl(typeNames) {
   const base = location.origin + location.pathname;
-  if (!typeNames || !typeNames.length) return base;
-  if (typeNames.length === 1) return base + '?type=' + encodeURIComponent(typeNames[0]);
-  return base + '?types=' + typeNames.map(encodeURIComponent).join(',');
+  const facetPart = activeFacet !== CONFIG.defaultFacet ? 'facet=' + encodeURIComponent(activeFacet) : '';
+  let typePart = '';
+  if (typeNames && typeNames.length === 1) typePart = 'type=' + encodeURIComponent(typeNames[0]);
+  else if (typeNames && typeNames.length) typePart = 'types=' + typeNames.map(encodeURIComponent).join(',');
+  const qs = [facetPart, typePart].filter(Boolean).join('&');
+  return qs ? base + '?' + qs : base;
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────
 function cleanUrl(u) {
   if (!u) return '';
-  u = u.trim().replace(/^['\",]+|['\",]+$/g,'').replace(/[\u200B-\u200D\uFEFF]/g,'');
+  u = u.trim().replace(/^['",]+|['",]+$/g,'').replace(/[\u200B-\u200D\uFEFF]/g,'');
   if (!u) return '';
   return /^https?:\/\//i.test(u) ? u : 'https://' + u;
 }
-
 function parseCSV(text) {
   const rows = []; let row = [], field = '', inQ = false;
   for (let i = 0; i < text.length; i++) {
@@ -151,21 +180,37 @@ function parseCSV(text) {
   if (field||row.length) { row.push(field.trim()); rows.push(row); }
   return rows;
 }
+function splitTags(v) { return (v||'').split(';').map(s=>s.trim()).filter(Boolean); }
+function appName(it) { return it['Display Name'] || it['App Name'] || ''; }
 
-function buildCats(items) {
+// Resolve which column the active facet reads, honouring fallbacks.
+function facetColumn(facetName) {
+  const spec = CONFIG.facets.find(f => f.name === facetName);
+  if (sheetHeaders.includes(spec.name)) return spec.name;
+  if (spec.fb && sheetHeaders.includes(spec.fb)) return spec.fb;
+  return null;
+}
+
+// Multi-tag aware: an app tagged "Eisenstein; Regge" lands in both slices.
+function buildCats(items, facetName) {
+  const col = facetColumn(facetName);
   const map = {};
-  items.forEach(it => { const k = it.Type||'Other'; (map[k]=map[k]||[]).push(it); });
+  items.forEach(it => {
+    const tags = col ? splitTags(it[col]) : [];
+    (tags.length ? tags : ['Other']).forEach(k => (map[k]=map[k]||[]).push(it));
+  });
   return Object.entries(map)
     .sort((a,b) => b[1].length - a[1].length)
     .map(([name,list],i) => ({ name, items:list, col:PAL[i%PAL.length] }));
 }
 
-// ── State ──────────────────────────────────────────────────────────────────────
-let allPhysics=[], cats=[], activeCats=[], // activeCats = what the pie shows
+// ── State ──────────────────────────────────────────────────────────────────
+let allApps=[], sheetHeaders=[], cats=[], activeCats=[],
     mode='outer', selCat=null, hov=-1, prog=0, raf=null;
-let filterTypes = null; // null = no filter; array of strings = filter active
+let filterTypes = null;
+let activeFacet = CONFIG.defaultFacet;
 
-// ── Canvas ─────────────────────────────────────────────────────────────────────
+// ── Canvas ─────────────────────────────────────────────────────────────────
 const cv=document.getElementById('pie'), ctx=cv.getContext('2d'), DPR=window.devicePixelRatio||1;
 
 function resize() {
@@ -213,10 +258,10 @@ function draw(p) {
 
 function viewData() {
   return mode==='outer' ? activeCats
-    : selCat.items.map((it,i) => ({ name:it['App Name'], items:[it], col:PAL[i%PAL.length] }));
+    : selCat.items.map((it,i) => ({ name:appName(it), items:[it], col:PAL[i%PAL.length] }));
 }
 
-// ── Hit test ───────────────────────────────────────────────────────────────────
+// ── Hit test ────────────────────────────────────────────────────────────────
 function hit(px,py) {
   const w=cv.width/DPR, h=cv.height/DPR, cx=w/2, cy=h/2;
   const OR=Math.min(w,h)*0.445, IR=OR*0.38;
@@ -233,7 +278,7 @@ function hit(px,py) {
   return -1;
 }
 
-// ── Events ─────────────────────────────────────────────────────────────────────
+// ── Events ──────────────────────────────────────────────────────────────────
 cv.addEventListener('mousemove',e => {
   const r=cv.getBoundingClientRect(), i=hit(e.clientX-r.left, e.clientY-r.top);
   if (i!==hov) { hov=i; cv.style.cursor=i>=0?'pointer':'default'; draw(1); updCentre(i); }
@@ -256,34 +301,64 @@ function openApp(it) { if(it?.['App URL']) window.open(it['App URL'],'_blank','n
 function updCentre(i) {
   if (mode==='outer') {
     i>=0 ? setCentre(activeCats[i].name, activeCats[i].items.length+' apps')
-         : setCentre(filterTypes?filterTypes.join(', '):'Mathematics', countLabel());
+         : setCentre(filterTypes?filterTypes.join(', '):CONFIG.subjectLabel, countLabel());
   } else {
-    i>=0 ? setCentre(selCat.items[i]['App Name'], selCat.items[i].Type||'')
+    i>=0 ? setCentre(appName(selCat.items[i]), '')
          : setCentre(selCat.name, selCat.items.length+' apps — click to open');
   }
 }
 function resetCentre() {
   mode==='outer'
-    ? setCentre(filterTypes?filterTypes.join(', '):'Mathematics', countLabel())
+    ? setCentre(filterTypes?filterTypes.join(', '):CONFIG.subjectLabel, countLabel())
     : setCentre(selCat.name, selCat.items.length+' — click to open');
 }
 function countLabel() {
   const n=activeCats.reduce((s,c)=>s+c.items.length,0);
-  return n+' apps';
+  return n+' apps · by '+activeFacet.toLowerCase();
 }
 function setCentre(t,c) {
   document.getElementById('cl-title').textContent=t;
   document.getElementById('cl-count').textContent=c||'';
 }
 
-// ── Drill / back ───────────────────────────────────────────────────────────────
+// ── Facet switcher ──────────────────────────────────────────────────────────
+function buildFacetBar() {
+  const bar = document.getElementById('facet-bar');
+  bar.innerHTML = '';
+  CONFIG.facets.forEach(spec => {
+    // Skip facets with no usable column and no data.
+    const col = facetColumn(spec.name);
+    if (!col) return;
+    const hasData = allApps.some(a => splitTags(a[col]).length);
+    if (!hasData) return;
+
+    const btn = document.createElement('button');
+    btn.className = 'facet-btn' + (spec.name === activeFacet ? ' active' : '');
+    btn.textContent = spec.name;
+    btn.onclick = () => setFacet(spec.name);
+    bar.appendChild(btn);
+  });
+}
+
+function setFacet(name) {
+  activeFacet = name;
+  filterTypes = null;
+  document.getElementById('filter-banner').style.display='none';
+  cats = buildCats(allApps, activeFacet);
+  activeCats = cats;
+  if (mode === 'inner') goBack(); else { buildLegend(); animIn(); }
+  buildFacetBar();
+  setCentre(CONFIG.subjectLabel, countLabel());
+  history.replaceState(null,'', makeShareUrl(null));
+}
+
+// ── Drill / back ────────────────────────────────────────────────────────────
 function drillInto(cat) {
   selCat=cat; mode='inner'; hov=-1;
   setCentre(cat.name, cat.items.length+' apps — click to open');
   document.getElementById('clabel').classList.add('hidden');
   document.getElementById('back-btn').style.display='block';
   buildSidebarInner(cat); showAppList(cat); animIn();
-  // Update URL hash to reflect drill (without reloading)
   const base = location.origin + location.pathname + location.search;
   history.replaceState(null,'', base + '#' + encodeURIComponent(cat.name));
 }
@@ -294,36 +369,29 @@ function goBack() {
   document.getElementById('clabel').classList.remove('hidden');
   document.getElementById('app-list').style.display='none';
   document.getElementById('share-toast').style.display='none';
-  setCentre(filterTypes?filterTypes.join(', '):'Mathematics', countLabel());
+  setCentre(filterTypes?filterTypes.join(', '):CONFIG.subjectLabel, countLabel());
   document.getElementById('sb-title').textContent=filterTypes?'Filtered: '+filterTypes.join(', '):'Categories';
   document.getElementById('sb-sub').textContent='Click a slice or item';
   buildLegend(); animIn();
-  // Remove hash
   history.replaceState(null,'', location.origin + location.pathname + location.search);
 }
 
-// ── Filter apply/clear ─────────────────────────────────────────────────────────
+// ── Filter apply/clear ──────────────────────────────────────────────────────
 function applyFilter(types) {
   filterTypes = types;
-  // activeCats = only cats whose name matches one of the filter types
   activeCats = cats.filter(c => types.some(t => c.name.toLowerCase() === t.toLowerCase()));
   if (!activeCats.length) {
-    // Fallback: substring match
     activeCats = cats.filter(c => types.some(t => c.name.toLowerCase().includes(t.toLowerCase())));
   }
-  if (!activeCats.length) activeCats = cats; // nothing matched, show all
+  if (!activeCats.length) activeCats = cats;
 
-  // Show filter banner
   const matched = activeCats.map(c=>c.name).join(', ');
   const total = activeCats.reduce((s,c)=>s+c.items.length,0);
   document.getElementById('fb-label').textContent =
     `Filtered to: ${matched} · ${total} app${total!==1?'s':''} · share this URL to send exactly these resources`;
   document.getElementById('filter-banner').style.display='block';
-
-  // Update header subtitle
   document.getElementById('header-sub').textContent =
     `Showing: ${matched} · ${total} apps · click a slice or card to open`;
-
   setCentre(matched, total+' apps');
   document.getElementById('sb-title').textContent='Filtered categories';
   buildLegend();
@@ -334,15 +402,14 @@ function clearFilter() {
   activeCats = cats;
   document.getElementById('filter-banner').style.display='none';
   document.getElementById('header-sub').textContent='Outer ring: category · click to reveal apps · click app slice or card to open';
-  setCentre('Mathematics', allPhysics.length+' apps');
+  setCentre(CONFIG.subjectLabel, countLabel());
   document.getElementById('sb-title').textContent='Categories';
   document.getElementById('sb-sub').textContent='Click a slice or item';
   buildLegend(); animIn();
-  // Remove filter from URL without reload
-  history.replaceState(null,'', location.origin + location.pathname);
+  history.replaceState(null,'', makeShareUrl(null));
 }
 
-// ── Share link ─────────────────────────────────────────────────────────────────
+// ── Share link ──────────────────────────────────────────────────────────────
 function copyShareLink() {
   const types = selCat ? [selCat.name] : (filterTypes || null);
   const url = makeShareUrl(types);
@@ -351,12 +418,10 @@ function copyShareLink() {
     toast.style.display='block';
     toast.textContent = '✓ Copied: ' + url;
     setTimeout(()=>{ toast.style.display='none'; }, 3500);
-  }).catch(() => {
-    prompt('Copy this link:', url);
-  });
+  }).catch(() => { prompt('Copy this link:', url); });
 }
 
-// ── Animation ──────────────────────────────────────────────────────────────────
+// ── Animation ──────────────────────────────────────────────────────────────
 function animIn() {
   prog=0; if(raf) cancelAnimationFrame(raf);
   const t0=performance.now(), DUR=640;
@@ -364,7 +429,7 @@ function animIn() {
   raf=requestAnimationFrame(step);
 }
 
-// ── Sidebar ────────────────────────────────────────────────────────────────────
+// ── Sidebar ─────────────────────────────────────────────────────────────────
 function buildLegend() {
   const el=document.getElementById('legend'); el.innerHTML='';
   activeCats.forEach(cat => {
@@ -372,7 +437,6 @@ function buildLegend() {
     row.innerHTML=`<span class="ldot" style="background:${cat.col}"></span><span class="lname">${cat.name}</span><span class="lnum">${cat.items.length}</span>`;
     row.onclick=()=>drillInto(cat); el.appendChild(row);
   });
-  // If filter is active AND there are hidden categories, show a dim count
   if (filterTypes && cats.length > activeCats.length) {
     const hidden = cats.length - activeCats.length;
     const info = document.createElement('div');
@@ -388,7 +452,7 @@ function buildSidebarInner(cat) {
   const el=document.getElementById('legend'); el.innerHTML='';
   cat.items.forEach((it,i) => {
     const row=document.createElement('div'); row.className='legend-item';
-    row.innerHTML=`<span class="ldot" style="background:${PAL[i%PAL.length]}"></span><span class="lname">${it['App Name']}</span><span class="larrow">↗</span>`;
+    row.innerHTML=`<span class="ldot" style="background:${PAL[i%PAL.length]}"></span><span class="lname">${appName(it)}</span><span class="larrow">↗</span>`;
     row.onclick=()=>openApp(it); el.appendChild(row);
   });
 }
@@ -401,14 +465,16 @@ function showAppList(cat) {
   cat.items.forEach(it => {
     const a=document.createElement('a');
     a.className='app-card'; a.href=it['App URL']; a.target='_blank'; a.rel='noopener';
-    a.innerHTML=`<div class="atitle">${it['App Name']}</div><div class="ameta">${it['App URL']}</div>`;
+    a.innerHTML=`<div class="atitle">${appName(it)}</div><div class="ameta">${it['App URL']}</div>`;
     cards.appendChild(a);
   });
 }
 
-// ── Fetch ──────────────────────────────────────────────────────────────────────
+// ── Fetch ───────────────────────────────────────────────────────────────────
 async function loadData() {
   const ldiv=document.getElementById('loading');
+  document.getElementById('header-title').textContent = CONFIG.subjectLabel + ' Apps — Thematic Pie';
+  document.title = CONFIG.subjectLabel + ' Apps — Thematic Pie';
   if (location.protocol==='file:') {
     ldiv.innerHTML=`⚠ Cannot fetch sheet data when opened as a local file.<br>Deploy to Vercel or GitHub Pages for live data.`;
     return;
@@ -419,37 +485,38 @@ async function loadData() {
     const text=await res.text();
     const rows=parseCSV(text);
     if (rows.length<2) throw new Error('Only '+rows.length+' rows parsed');
-    const headers=rows[0].map(h=>h.replace(/^\"|\"$/g,'').trim());
+    sheetHeaders=rows[0].map(h=>h.replace(/^"|"$/g,'').trim());
     const apps=[];
     for (let i=1; i<rows.length; i++) {
       const vals=rows[i];
       if (vals.length<=1&&vals[0]==='') continue;
       const app={};
-      headers.forEach((h,idx) => {
-        let v=(vals[idx]||'').replace(/^\"|\"$/g,'').trim();
+      sheetHeaders.forEach((h,idx) => {
+        let v=(vals[idx]||'').replace(/^"|"$/g,'').trim();
         if (h==='App URL') v=cleanUrl(v);
         app[h]=v;
       });
       if (app['App Name']&&app['App URL']) apps.push(app);
     }
-    allPhysics=apps.filter(a=>(a['Subject']||'').trim().toLowerCase().includes('maths'));
-    if (!allPhysics.length) {
+    allApps=apps.filter(a=>(a['Subject']||'').trim().toLowerCase().includes(CONFIG.subjectMatch));
+    if (!allApps.length) {
       const subs=[...new Set(apps.map(a=>a['Subject']))].filter(Boolean).join(' | ');
-      throw new Error('No Maths rows found. Subjects: '+subs);
+      throw new Error('No '+CONFIG.subjectLabel+' rows found. Subjects: '+subs);
     }
-    cats=buildCats(allPhysics);
-    activeCats=cats; // default: all
+
+    activeFacet = getFacetParam() || CONFIG.defaultFacet;
+    cats=buildCats(allApps, activeFacet);
+    activeCats=cats;
 
     ldiv.style.display='none';
     document.getElementById('stage').style.display='grid';
+    buildFacetBar();
     buildLegend();
     resize();
 
-    // ── Apply URL filter if present ──
     const filterParam = getFilterParam();
     if (filterParam) {
       applyFilter(filterParam);
-      // Also check for a hash = auto-drill into a category
       const hashCat = decodeURIComponent(location.hash.slice(1));
       if (hashCat) {
         const target = activeCats.find(c => c.name === hashCat);
@@ -457,7 +524,7 @@ async function loadData() {
       }
     }
 
-    setCentre(filterTypes?filterTypes.join(', '):'Mathematics', countLabel());
+    setCentre(filterTypes?filterTypes.join(', '):CONFIG.subjectLabel, countLabel());
     animIn();
     window.addEventListener('resize',resize);
   } catch(e) {
